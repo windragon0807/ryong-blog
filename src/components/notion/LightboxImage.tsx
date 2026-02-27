@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { RetryableImage } from '@/components/RetryableImage'
+import { useAnimatedPresence } from '@/hooks/useAnimatedPresence'
 
 interface Props {
   src: string
@@ -21,9 +22,13 @@ export function LightboxImage({
   unoptimized = false,
 }: Props) {
   const [open, setOpen] = useState(false)
+  const { isMounted, state } = useAnimatedPresence(open, {
+    enterDelayMs: 16,
+    exitDurationMs: 180,
+  })
 
   useEffect(() => {
-    if (!open) return
+    if (!isMounted) return
 
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -39,7 +44,7 @@ export function LightboxImage({
       document.removeEventListener('keydown', onKeyDown)
       document.body.style.overflow = previousOverflow
     }
-  }, [open])
+  }, [isMounted])
 
   return (
     <>
@@ -60,9 +65,10 @@ export function LightboxImage({
         />
       </button>
 
-      {open && (
+      {isMounted && (
         <div
-          className="fixed inset-0 z-[90] flex items-center justify-center bg-black/86 p-4 backdrop-blur-sm"
+          className="lightbox-overlay fixed inset-0 z-[90] flex items-center justify-center bg-black/86 p-4"
+          data-state={state}
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -88,7 +94,8 @@ export function LightboxImage({
           <img
             src={src}
             alt={alt}
-            className="max-h-[88vh] max-w-[95vw] rounded-xl object-contain shadow-2xl"
+            className="lightbox-panel max-h-[88vh] max-w-[95vw] rounded-xl object-contain shadow-2xl"
+            data-state={state}
             onClick={(event) => event.stopPropagation()}
             loading="eager"
             decoding="async"

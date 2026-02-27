@@ -41,47 +41,55 @@ export function CodeCopyButton({ code }: Props) {
   }
 
   return (
-    <button
-      type="button"
-      onClick={handleCopy}
-      className="inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 dark:text-zinc-300 hover:bg-zinc-200/80 dark:hover:bg-zinc-600/70 hover:text-zinc-700 dark:hover:text-zinc-100 transition-colors"
-      aria-label={copied ? '코드 복사됨' : '코드 복사'}
-      title={copied ? '복사됨' : '코드 복사'}
-    >
-      {copied ? (
-        <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
-          <path
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m5 13 4 4L19 7"
-          />
-        </svg>
-      ) : (
-        <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
-          <rect
-            x="9"
-            y="9"
-            width="11"
-            height="11"
-            rx="2"
-            ry="2"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-          />
-          <path
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 15V6a2 2 0 0 1 2-2h9"
-          />
-        </svg>
-      )}
-    </button>
+    <div className="relative inline-flex items-center">
+      <span
+        className="code-copy-toast pointer-events-none absolute top-1/2 right-8 -translate-y-1/2 whitespace-nowrap rounded-md border border-zinc-200 bg-white px-2 py-1 text-[11px] font-medium text-zinc-600 shadow-sm dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200"
+        data-visible={copied ? 'true' : 'false'}
+      >
+        Copied
+      </span>
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-all duration-200 hover:bg-zinc-200/80 hover:text-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600/70 dark:hover:text-zinc-100"
+        aria-label={copied ? '코드 복사됨' : '코드 복사'}
+        title={copied ? '복사됨' : '코드 복사'}
+      >
+        {copied ? (
+          <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="m5 13 4 4L19 7"
+            />
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
+            <rect
+              x="9"
+              y="9"
+              width="11"
+              height="11"
+              rx="2"
+              ry="2"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            />
+            <path
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 15V6a2 2 0 0 1 2-2h9"
+            />
+          </svg>
+        )}
+      </button>
+    </div>
   )
 }

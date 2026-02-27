@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { getLenisInstance } from '@/lib/lenis'
 
 const SHOW_AFTER_SCROLL_Y = 280
 
@@ -28,10 +29,14 @@ export function ScrollToTopButton() {
 
   const handleClick = () => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    window.scrollTo({
-      top: 0,
-      behavior: reduceMotion ? 'auto' : 'smooth',
-    })
+    const lenis = getLenisInstance()
+
+    if (lenis && !reduceMotion) {
+      lenis.scrollTo(0, { duration: 0.56 })
+      return
+    }
+
+    window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' })
   }
 
   return (

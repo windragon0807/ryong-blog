@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import Script from 'next/script'
 import { ThemeProvider } from 'next-themes'
 import { Header } from '@/components/Header'
+import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
 import { CODE_THEME_STYLE_TEXT, CODE_THEME_VALUES } from '@/lib/codeThemes'
 import {
@@ -108,6 +109,7 @@ export default function RootLayout({
           {fontThemeBootScript}
         </Script>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <SmoothScrollProvider />
           <Header />
           <main className="max-w-3xl mx-auto px-4 pt-8 pb-16">{children}</main>
           <ScrollToTopButton />

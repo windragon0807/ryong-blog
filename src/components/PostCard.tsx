@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import type { Post } from '@/types/notion'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
@@ -7,9 +8,16 @@ import { getCoverAccent } from '@/lib/coverAccent'
 interface Props {
   post: Post
   variant?: 'grid' | 'list'
+  motionIndex?: number
+  motionCycle?: number
 }
 
-export function PostCard({ post, variant = 'grid' }: Props) {
+export function PostCard({
+  post,
+  variant = 'grid',
+  motionIndex = 0,
+  motionCycle = 0,
+}: Props) {
   const isList = variant === 'list'
   const formattedDate = post.date
     ? new Date(post.date).toLocaleDateString('ko-KR', {
@@ -19,11 +27,20 @@ export function PostCard({ post, variant = 'grid' }: Props) {
       })
     : ''
   const accent = getCoverAccent(post.cover ?? post.slug)
+  const delayMs = Math.min(motionIndex * 55, 320)
+  const motionStyle = {
+    '--card-delay': `${delayMs}ms`,
+  } as CSSProperties
 
   return (
-    <Link href={`/posts/${post.slug}`} className={`group block ${isList ? '' : 'h-full'}`}>
+    <Link
+      href={`/posts/${post.slug}`}
+      className={`group block ${isList ? '' : 'h-full'}`}
+      style={motionStyle}
+      data-motion-cycle={motionCycle}
+    >
       <article
-        className={`overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-zinc-300 hover:shadow-xl dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 ${
+        className={`post-card-motion post-card-surface overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-[transform,border-color,box-shadow,filter] duration-[460ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.01] dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.04] ${
           isList ? '' : 'h-full'
         }`}
       >
@@ -43,7 +60,7 @@ export function PostCard({ post, variant = 'grid' }: Props) {
                 src={post.cover}
                 alt={`${post.title} 배너`}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                 sizes={
                   isList
                     ? '(max-width: 640px) 100vw, (max-width: 1280px) 45vw, 36vw'
@@ -55,9 +72,9 @@ export function PostCard({ post, variant = 'grid' }: Props) {
             ) : (
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,#dbeafe_0,#dbeafe_28%,transparent_60%),radial-gradient(circle_at_80%_30%,#bfdbfe_0,#bfdbfe_22%,transparent_55%)] dark:bg-[radial-gradient(circle_at_25%_25%,#1e3a8a_0,#1e3a8a_25%,transparent_58%),radial-gradient(circle_at_80%_30%,#1d4ed8_0,#1d4ed8_22%,transparent_52%)]" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent transition-opacity duration-500 group-hover:opacity-90" />
             <div
-              className="absolute inset-0 opacity-65 mix-blend-soft-light"
+              className="absolute inset-0 opacity-65 mix-blend-soft-light transition-transform duration-500 ease-out group-hover:scale-[1.02]"
               style={{
                 background: `radial-gradient(circle at 75% 82%, ${accent.soft} 0%, transparent 62%)`,
               }}
@@ -67,13 +84,13 @@ export function PostCard({ post, variant = 'grid' }: Props) {
           <div className={`flex flex-col ${isList ? 'flex-1 p-5' : 'p-4'}`}>
             <div className="flex items-start gap-3">
               {post.icon && (
-                <div className="mt-0.5 shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 p-1 dark:border-zinc-700 dark:bg-zinc-900/40">
+                <div className="mt-0.5 shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 p-1 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.03] dark:border-zinc-700 dark:bg-zinc-900/40">
                   <PostPageIcon icon={post.icon} size={24} className="shrink-0" />
                 </div>
               )}
               <div className="min-w-0 flex-1">
                 <h2
-                  className={`line-clamp-2 leading-snug font-semibold text-zinc-900 transition-colors group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400 ${
+                  className={`line-clamp-2 leading-snug font-semibold text-zinc-900 transition-colors duration-300 ease-out group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400 ${
                     isList ? 'text-[1.72rem]' : 'text-lg'
                   }`}
                 >

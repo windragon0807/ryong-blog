@@ -110,7 +110,7 @@ export default async function PostPage({ params }: PageProps) {
         {/* 헤더 */}
         <header className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-700">
           {post.cover && (
-            <figure className="mb-5 overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700">
+            <figure className="post-hero-cover mb-5 overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700">
               <div className="relative aspect-[1200/630] w-full overflow-hidden">
                 <RetryableImage
                   src={post.cover}
@@ -126,11 +126,11 @@ export default async function PostPage({ params }: PageProps) {
             </figure>
           )}
           {post.icon && (
-            <div className="mb-2">
+            <div className="post-hero-icon mb-2">
               <PostPageIcon icon={post.icon} size={70} />
             </div>
           )}
-          <div className="mb-3 flex items-center gap-3">
+          <div className="post-hero-meta mb-3 flex items-center gap-3">
             <time className="text-sm text-zinc-400 dark:text-zinc-400">
               {formattedDate}
             </time>
@@ -145,12 +145,12 @@ export default async function PostPage({ params }: PageProps) {
           </div>
           <h1
             id="post-title"
-            className="mb-3 scroll-mt-24 text-3xl font-bold leading-tight"
+            className="post-hero-title mb-3 scroll-mt-24 text-3xl font-bold leading-tight"
           >
             {post.title}
           </h1>
           {post.description && (
-            <p className="text-lg text-zinc-500 dark:text-zinc-300">
+            <p className="post-hero-description text-lg text-zinc-500 dark:text-zinc-300">
               {post.description}
             </p>
           )}
