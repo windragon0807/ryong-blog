@@ -7,7 +7,6 @@ import { getRelatedPosts } from '@/lib/postContent'
 import { ReadingProgress } from '@/components/ReadingProgress'
 import { RelatedPosts } from '@/components/RelatedPosts'
 import { RetryableImage } from '@/components/RetryableImage'
-import { SubscriptionCta } from '@/components/SubscriptionCta'
 import { GiscusComments } from '@/components/GiscusComments'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
 import { PostReadingTime } from '@/components/notion/PostReadingTime'
@@ -183,7 +182,6 @@ export default async function PostPage({ params }: PageProps) {
         </Suspense>
 
         <GiscusComments />
-        <SubscriptionCta className="mt-8" />
         <RelatedPosts posts={relatedPosts} />
       </article>
     </>

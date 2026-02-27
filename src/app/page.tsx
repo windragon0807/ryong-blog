@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { getPosts, getAllTags, getAllSeries } from '@/lib/notion'
 import { PostExplorer } from '@/components/PostExplorer'
 import { SeriesFilter } from '@/components/SeriesFilter'
-import { SubscriptionCta } from '@/components/SubscriptionCta'
 import { TagFilter } from '@/components/TagFilter'
 
 export const revalidate = 3600 // ISR: 1시간마다 재생성
@@ -47,8 +46,6 @@ export default async function HomePage() {
         posts={posts}
         emptyMessage="아직 게시된 글이 없습니다."
       />
-
-      <SubscriptionCta className="mt-10" />
     </div>
   )
 }
