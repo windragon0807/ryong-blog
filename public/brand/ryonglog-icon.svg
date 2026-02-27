@@ -1,0 +1,18 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ryong.log icon">
+  <defs>
+    <linearGradient id="ryonglog-bg" x1="8" y1="6" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#17326f" />
+      <stop offset="1" stop-color="#2d4ea3" />
+    </linearGradient>
+    <linearGradient id="ryonglog-glyph" x1="14" y1="16" x2="42" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#d7e8ff" />
+      <stop offset="1" stop-color="#8cb6ff" />
+    </linearGradient>
+  </defs>
+
+  <rect x="4" y="4" width="56" height="56" rx="16" fill="url(#ryonglog-bg)" />
+  <circle cx="24" cy="32" r="12" fill="url(#ryonglog-glyph)" />
+  <circle cx="24" cy="32" r="6.25" fill="#1b3472" />
+  <rect x="30" y="20" width="6" height="24" rx="3" fill="url(#ryonglog-glyph)" />
+  <circle cx="43.5" cy="42.5" r="4.5" fill="#f5f8ff" />
+</svg>

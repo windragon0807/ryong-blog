@@ -1,0 +1,506 @@
+.root {
+  --track-width: 236px;
+  --track-height: 112px;
+  --thumb-size: 80px;
+  --track-pad: 11px;
+  --toggle-scale: 0.36;
+  --visual-width: calc(var(--track-width) * var(--toggle-scale));
+  --visual-height: calc(var(--track-height) * var(--toggle-scale));
+  --thumb-shift: calc(var(--track-width) - var(--thumb-size) - (var(--track-pad) * 2));
+  --anim: 620ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  width: var(--visual-width);
+  height: var(--visual-height);
+  flex: 0 0 auto;
+  user-select: none;
+}
+
+.placeholder {
+  width: var(--visual-width);
+  height: var(--visual-height);
+  flex: 0 0 auto;
+}
+
+.switch {
+  position: absolute;
+  inset: 0;
+  width: var(--track-width);
+  height: var(--track-height);
+  border: 0;
+  border-radius: 999px;
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  background: transparent;
+  outline: none;
+  transform: scale(var(--toggle-scale));
+  transform-origin: top left;
+}
+
+.switch:focus-visible {
+  box-shadow: 0 0 0 3px rgba(130, 152, 217, 0.42);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.sky {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #b4c9ef 0%, #b7cbf0 58%, #8fc19d 100%);
+  transition: background var(--anim);
+}
+
+.cloudLeft,
+.cloudRight {
+  position: absolute;
+  background: #d5e2f7;
+  border-radius: 999px;
+  opacity: 0.78;
+  transition:
+    opacity var(--anim),
+    transform var(--anim),
+    background var(--anim);
+}
+
+.cloudLeft {
+  width: 15px;
+  height: 8px;
+  left: 44%;
+  top: 21%;
+}
+
+.cloudRight {
+  width: 22px;
+  height: 12px;
+  right: 15px;
+  top: 25%;
+}
+
+.sunGlow {
+  position: absolute;
+  width: 68px;
+  height: 68px;
+  left: 52%;
+  top: 63%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(243, 223, 137, 0.48) 0%, rgba(243, 223, 137, 0.16) 44%, rgba(243, 223, 137, 0) 72%);
+  transition:
+    opacity var(--anim),
+    transform var(--anim);
+}
+
+.sun {
+  position: absolute;
+  width: 56px;
+  height: 56px;
+  left: 52%;
+  top: 66%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: #f0dc84;
+  transition:
+    opacity var(--anim),
+    transform var(--anim),
+    background var(--anim);
+}
+
+.moon {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  left: 34%;
+  top: 45%;
+  border-radius: 999px;
+  background: #f4f7f4;
+  transform: translate(-50%, -50%) translateX(14px) scale(0.74);
+  opacity: 0;
+  transition:
+    opacity var(--anim),
+    transform var(--anim);
+}
+
+.moon::after {
+  content: '';
+  position: absolute;
+  width: 31px;
+  height: 31px;
+  right: -6px;
+  top: 4px;
+  border-radius: 999px;
+  background: #1a3365;
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--anim);
+}
+
+.stars::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(2px 2px at 12% 57%, #f7f9ff 98%, transparent 100%),
+    radial-gradient(2.6px 2.6px at 27% 25%, #f7f9ff 98%, transparent 100%),
+    radial-gradient(1.7px 1.7px at 37% 54%, #f7f9ff 98%, transparent 100%),
+    radial-gradient(2px 2px at 50% 33%, #f7f9ff 98%, transparent 100%),
+    radial-gradient(2.9px 2.9px at 66% 50%, #f7f9ff 98%, transparent 100%),
+    radial-gradient(2.1px 2.1px at 82% 31%, #f7f9ff 98%, transparent 100%),
+    radial-gradient(1.8px 1.8px at 92% 48%, #f7f9ff 98%, transparent 100%);
+}
+
+.hillBack,
+.hillLeft,
+.hillFront {
+  position: absolute;
+  border-radius: 50%;
+  transition:
+    background var(--anim),
+    transform var(--anim);
+}
+
+.hillBack {
+  width: 164px;
+  height: 92px;
+  left: -5px;
+  bottom: -44px;
+  background: #9dcdab;
+}
+
+.hillLeft {
+  width: 120px;
+  height: 76px;
+  left: -22px;
+  bottom: -32px;
+  background: #5fb086;
+}
+
+.hillFront {
+  width: 182px;
+  height: 106px;
+  right: -28px;
+  bottom: -58px;
+  background: #84be93;
+}
+
+.bush {
+  position: absolute;
+  right: 46px;
+  bottom: 23px;
+  width: 44px;
+  height: 20px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 18% 66%, #60ac80 46%, transparent 47%),
+    radial-gradient(circle at 46% 34%, #79bb94 48%, transparent 49%),
+    radial-gradient(circle at 70% 70%, #5fa87e 43%, transparent 44%),
+    radial-gradient(circle at 86% 38%, #6eb68d 46%, transparent 47%);
+  transition:
+    filter var(--anim),
+    opacity var(--anim);
+  z-index: 5;
+}
+
+.trunk {
+  position: absolute;
+  right: 28px;
+  bottom: 14px;
+  width: 29px;
+  height: 73px;
+  border-radius: 18px 18px 14px 14px;
+  background: linear-gradient(180deg, #c48656 0%, #b27747 56%, #9a643c 100%);
+  transform: rotate(10deg);
+  transform-origin: bottom center;
+  transition:
+    background var(--anim),
+    opacity var(--anim);
+  z-index: 6;
+}
+
+.trunkHighlight {
+  position: absolute;
+  right: 38px;
+  bottom: 42px;
+  width: 10px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(223, 177, 138, 0.9) 0%, rgba(223, 177, 138, 0.08) 100%);
+  transform: rotate(10deg);
+  transform-origin: bottom center;
+  transition:
+    background var(--anim),
+    opacity var(--anim);
+  z-index: 7;
+}
+
+.trunkShadow {
+  position: absolute;
+  right: 24px;
+  bottom: 18px;
+  width: 12px;
+  height: 58px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(126, 80, 48, 0) 0%, rgba(126, 80, 48, 0.62) 100%);
+  transform: rotate(10deg);
+  transform-origin: bottom center;
+  transition:
+    background var(--anim),
+    opacity var(--anim);
+  z-index: 7;
+}
+
+.canopyBase,
+.canopyPuffLeft,
+.canopyPuffTop,
+.canopyPuffRight,
+.canopyShade {
+  position: absolute;
+  transition:
+    filter var(--anim),
+    opacity var(--anim),
+    background var(--anim);
+}
+
+.canopyBase {
+  right: -17px;
+  top: -20px;
+  width: 126px;
+  height: 76px;
+  border-radius: 58% 62% 57% 58% / 63% 66% 56% 58%;
+  background: linear-gradient(170deg, #8ec9a4 0%, #74ba90 48%, #68af86 100%);
+  z-index: 8;
+}
+
+.canopyPuffLeft {
+  right: 53px;
+  top: -12px;
+  width: 53px;
+  height: 40px;
+  border-radius: 60% 58% 53% 58%;
+  background: #7abb95;
+  z-index: 8;
+}
+
+.canopyPuffTop {
+  right: 26px;
+  top: -27px;
+  width: 64px;
+  height: 44px;
+  border-radius: 60% 62% 52% 54%;
+  background: #89c59e;
+  z-index: 8;
+}
+
+.canopyPuffRight {
+  right: -6px;
+  top: -14px;
+  width: 60px;
+  height: 40px;
+  border-radius: 62% 64% 54% 56%;
+  background: #6ead88;
+  z-index: 8;
+}
+
+.canopyShade {
+  right: 8px;
+  top: -7px;
+  width: 88px;
+  height: 54px;
+  border-radius: 60% 62% 58% 58%;
+  background:
+    radial-gradient(54px 34px at 66% 22%, rgba(126, 168, 138, 0.55) 0%, rgba(126, 168, 138, 0) 72%),
+    radial-gradient(58px 30px at 30% 74%, rgba(94, 142, 111, 0.3) 0%, rgba(94, 142, 111, 0) 78%);
+  z-index: 9;
+}
+
+.branchMain,
+.branchLeft,
+.branchRight,
+.branchTwigLeft,
+.branchTwigRight {
+  position: absolute;
+  border-radius: 999px;
+  background: #956348;
+  transform-origin: left center;
+  transition:
+    background var(--anim),
+    opacity var(--anim),
+    transform var(--anim);
+  z-index: 7;
+}
+
+.branchMain {
+  right: 50px;
+  top: 26px;
+  width: 35px;
+  height: 5px;
+  transform: rotate(34deg);
+}
+
+.branchLeft {
+  right: 59px;
+  top: 28px;
+  width: 22px;
+  height: 4px;
+  transform: rotate(53deg);
+}
+
+.branchRight {
+  right: 39px;
+  top: 30px;
+  width: 19px;
+  height: 4px;
+  transform: rotate(9deg);
+}
+
+.branchTwigLeft {
+  right: 47px;
+  top: 22px;
+  width: 12px;
+  height: 3px;
+  transform: rotate(65deg);
+}
+
+.branchTwigRight {
+  right: 31px;
+  top: 29px;
+  width: 11px;
+  height: 3px;
+  transform: rotate(-8deg);
+}
+
+.thumb {
+  position: absolute;
+  left: var(--track-pad);
+  top: 50%;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 999px;
+  transform: translate3d(0, -50%, 0);
+  background: #f5f5f5;
+  box-shadow:
+    0 9px 16px rgba(0, 0, 0, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+  transition:
+    transform var(--anim),
+    box-shadow var(--anim),
+    background var(--anim);
+  z-index: 40;
+}
+
+.root[data-state='dark'] .sky {
+  background: linear-gradient(180deg, #081a47 0%, #14295d 54%, #516f73 100%);
+}
+
+.root[data-state='dark'] .cloudLeft,
+.root[data-state='dark'] .cloudRight {
+  opacity: 0.2;
+  background: #afc0dd;
+}
+
+.root[data-state='dark'] .sun,
+.root[data-state='dark'] .sunGlow {
+  opacity: 0;
+  transform: translate(-54%, -50%) scale(0.72);
+}
+
+.root[data-state='dark'] .moon {
+  opacity: 1;
+  transform: translate(-50%, -50%) translateX(0) scale(1);
+}
+
+.root[data-state='dark'] .stars {
+  opacity: 1;
+}
+
+.root[data-state='dark'] .hillBack {
+  background: #4b6b70;
+  transform: translateY(2px);
+}
+
+.root[data-state='dark'] .hillLeft {
+  background: #345f64;
+}
+
+.root[data-state='dark'] .hillFront {
+  background: #3f6b62;
+  transform: translateY(1px);
+}
+
+.root[data-state='dark'] .bush {
+  filter: saturate(0.7) brightness(0.72);
+}
+
+.root[data-state='dark'] .trunk {
+  background: linear-gradient(180deg, #8a5f3f 0%, #704a31 56%, #5a3a28 100%);
+}
+
+.root[data-state='dark'] .trunkHighlight {
+  background: linear-gradient(180deg, rgba(174, 132, 98, 0.58) 0%, rgba(174, 132, 98, 0.04) 100%);
+}
+
+.root[data-state='dark'] .trunkShadow {
+  background: linear-gradient(180deg, rgba(78, 48, 31, 0) 0%, rgba(78, 48, 31, 0.72) 100%);
+}
+
+.root[data-state='dark'] .branchMain,
+.root[data-state='dark'] .branchLeft,
+.root[data-state='dark'] .branchRight,
+.root[data-state='dark'] .branchTwigLeft,
+.root[data-state='dark'] .branchTwigRight {
+  background: #6f4a34;
+  opacity: 0.7;
+}
+
+.root[data-state='dark'] .canopyBase,
+.root[data-state='dark'] .canopyPuffLeft,
+.root[data-state='dark'] .canopyPuffTop,
+.root[data-state='dark'] .canopyPuffRight,
+.root[data-state='dark'] .canopyShade {
+  filter: saturate(0.72) brightness(0.74);
+}
+
+.root[data-state='dark'] .thumb {
+  transform: translate3d(var(--thumb-shift), -50%, 0);
+  background: #f3f4f6;
+  box-shadow:
+    0 9px 18px rgba(0, 0, 0, 0.3),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.06);
+}
+
+@media (max-width: 1200px) {
+  .root {
+    --toggle-scale: 0.34;
+  }
+}
+
+@media (max-width: 900px) {
+  .root {
+    --toggle-scale: 0.32;
+  }
+}
+
+@media (max-width: 640px) {
+  .root {
+    --toggle-scale: 0.3;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root *,
+  .root {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

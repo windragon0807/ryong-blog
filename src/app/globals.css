@@ -1,0 +1,107 @@
+@import 'pretendard/dist/web/static/pretendard-dynamic-subset.css';
+@import "tailwindcss";
+@custom-variant dark (&:where(html.dark, html.dark *));
+
+@font-face {
+  font-family: 'Maplestory OTF';
+  src: url('/fonts/maplestory/Maplestory-OTF-Light.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Maplestory OTF';
+  src: url('/fonts/maplestory/Maplestory-OTF-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --font-user: Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+}
+
+html[data-font-theme='pretendard'] {
+  --font-user: Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+}
+
+html[data-font-theme='maplestory'] {
+  --font-user: 'Maplestory OTF', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+}
+
+html.dark {
+  --background: #171a23;
+  --foreground: #f1f4fb;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-user) !important;
+}
+
+.notion-code pre.shiki {
+  margin: 0;
+  border-radius: 0;
+}
+
+html:not([data-code-theme]) .notion-code pre.shiki {
+  color: var(--shiki-one-light) !important;
+  background-color: var(--shiki-one-light-bg) !important;
+}
+
+html:not([data-code-theme]) .notion-code pre.shiki span {
+  color: var(--shiki-one-light) !important;
+}
+
+html.dark:not([data-code-theme]) .notion-code pre.shiki {
+  color: var(--shiki-one-dark-pro) !important;
+  background-color: var(--shiki-one-dark-pro-bg) !important;
+}
+
+html.dark:not([data-code-theme]) .notion-code pre.shiki span {
+  color: var(--shiki-one-dark-pro) !important;
+}
+
+.notion-toggle > summary::-webkit-details-marker {
+  display: none;
+}
+
+.notion-toggle[open] > summary .toggle-chevron {
+  transform: rotate(90deg);
+}
+
+.notion-toggle {
+  interpolate-size: allow-keywords;
+}
+
+.notion-toggle::details-content {
+  block-size: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    block-size 280ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 200ms ease,
+    content-visibility 280ms allow-discrete;
+}
+
+.notion-toggle[open]::details-content {
+  block-size: auto;
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notion-toggle::details-content {
+    transition: none;
+  }
+}
