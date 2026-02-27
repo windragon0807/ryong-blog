@@ -16,6 +16,12 @@ const notion = new Client({
 const DATABASE_ID = process.env.NOTION_DATABASE_ID!
 const CACHE_TTL_SECONDS = process.env.NODE_ENV === 'development' ? 120 : 3600
 
+export const NOTION_CACHE_TAGS = {
+  schema: 'notion:schema',
+  posts: 'notion:posts',
+  blocks: 'notion:blocks',
+} as const
+
 // ─────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────
@@ -24,6 +30,8 @@ interface DatabaseSchema {
   title: string | null
   slug: string | null
   description: string | null
+  seriesSelect: string | null
+  seriesRich: string | null
   tags: string | null
   published: string | null
   date: string | null
@@ -70,6 +78,8 @@ const getDatabaseSchemaCached = unstable_cache(async (): Promise<DatabaseSchema>
       ['description', '요약', '설명', 'excerpt'],
       'rich_text'
     ),
+    seriesSelect: findProperty(properties, ['series', '시리즈'], 'select'),
+    seriesRich: findProperty(properties, ['series', '시리즈'], 'rich_text'),
     tags: findProperty(properties, ['tags', 'tag', '태그'], 'multi_select'),
     published: findProperty(
       properties,
@@ -78,7 +88,10 @@ const getDatabaseSchemaCached = unstable_cache(async (): Promise<DatabaseSchema>
     ),
     date: findProperty(properties, ['date', 'publishedat', '날짜'], 'date'),
   }
-}, [`notion-schema:${DATABASE_ID}`], { revalidate: CACHE_TTL_SECONDS })
+}, [`notion-schema:${DATABASE_ID}`], {
+  revalidate: CACHE_TTL_SECONDS,
+  tags: [NOTION_CACHE_TAGS.schema],
+})
 
 const getDatabaseSchema = cache(async (): Promise<DatabaseSchema> => {
   return getDatabaseSchemaCached()
@@ -108,6 +121,8 @@ function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
   const titleProp = schema.title ? props[schema.title] : undefined
   const slugProp = schema.slug ? props[schema.slug] : undefined
   const descriptionProp = schema.description ? props[schema.description] : undefined
+  const seriesSelectProp = schema.seriesSelect ? props[schema.seriesSelect] : undefined
+  const seriesRichProp = schema.seriesRich ? props[schema.seriesRich] : undefined
   const tagsProp = schema.tags ? props[schema.tags] : undefined
   const publishedProp = schema.published ? props[schema.published] : undefined
   const dateProp = schema.date ? props[schema.date] : undefined
@@ -125,6 +140,14 @@ function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
   const description = extractRichText(
     (descriptionProp as { rich_text?: RichText[] })?.rich_text ?? []
   )
+
+  const seriesFromSelect =
+    (seriesSelectProp as { select?: { name?: string } | null })?.select?.name ??
+    null
+  const seriesFromRich = extractRichText(
+    (seriesRichProp as { rich_text?: RichText[] })?.rich_text ?? []
+  )
+  const series = seriesFromSelect ?? (seriesFromRich || null)
 
   const tags: string[] = (
     (tagsProp as { multi_select?: { name: string }[] })?.multi_select ?? []
@@ -156,7 +179,18 @@ function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
           ? { type: 'image' as const, url: page.icon.file.url }
           : null
 
-  return { id: page.id, title, slug, description, tags, published, date, icon, cover }
+  return {
+    id: page.id,
+    title,
+    slug,
+    description,
+    series,
+    tags,
+    published,
+    date,
+    icon,
+    cover,
+  }
 }
 
 async function queryAllPages(params: {
@@ -208,6 +242,7 @@ async function getPostsImpl(): Promise<Post[]> {
 
 const getPostsCached = unstable_cache(getPostsImpl, [`notion-posts:${DATABASE_ID}`], {
   revalidate: CACHE_TTL_SECONDS,
+  tags: [NOTION_CACHE_TAGS.posts],
 })
 
 export const getPosts = cache(async (): Promise<Post[]> => {
@@ -251,7 +286,10 @@ async function getPostBySlugImpl(slug: string): Promise<Post | null> {
 const getPostBySlugCached = unstable_cache(
   getPostBySlugImpl,
   [`notion-post-by-slug:${DATABASE_ID}`],
-  { revalidate: CACHE_TTL_SECONDS }
+  {
+    revalidate: CACHE_TTL_SECONDS,
+    tags: [NOTION_CACHE_TAGS.posts],
+  }
 )
 
 export const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
@@ -287,7 +325,10 @@ async function getPostsByTagImpl(tag: string): Promise<Post[]> {
 const getPostsByTagCached = unstable_cache(
   getPostsByTagImpl,
   [`notion-posts-by-tag:${DATABASE_ID}`],
-  { revalidate: CACHE_TTL_SECONDS }
+  {
+    revalidate: CACHE_TTL_SECONDS,
+    tags: [NOTION_CACHE_TAGS.posts],
+  }
 )
 
 export const getPostsByTag = cache(async (tag: string): Promise<Post[]> => {
@@ -344,7 +385,10 @@ async function getPageBlocksImpl(blockId: string): Promise<Block[]> {
 const getPageBlocksCached = unstable_cache(
   getPageBlocksImpl,
   [`notion-page-blocks:${DATABASE_ID}`],
-  { revalidate: CACHE_TTL_SECONDS }
+  {
+    revalidate: CACHE_TTL_SECONDS,
+    tags: [NOTION_CACHE_TAGS.blocks],
+  }
 )
 
 export const getPageBlocks = cache(async (blockId: string): Promise<Block[]> => {
@@ -361,4 +405,22 @@ export async function getAllSlugs(): Promise<string[]> {
       (slugValue, index, arr) =>
         arr.findIndex((otherSlug) => otherSlug === slugValue) === index
     )
+}
+
+/** 특정 시리즈의 포스트 목록 */
+export async function getPostsBySeries(series: string): Promise<Post[]> {
+  const posts = await getPosts()
+  return posts.filter((post) => post.series === series)
+}
+
+/** 전체 시리즈 목록 집계 */
+export async function getAllSeries(): Promise<string[]> {
+  const posts = await getPosts()
+  const seriesSet = new Set<string>()
+  posts.forEach((post) => {
+    if (post.series) {
+      seriesSet.add(post.series)
+    }
+  })
+  return Array.from(seriesSet).sort()
 }

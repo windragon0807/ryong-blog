@@ -1,11 +1,26 @@
-import { getPosts, getAllTags } from '@/lib/notion'
-import { PostCard } from '@/components/PostCard'
+import type { Metadata } from 'next'
+import { getPosts, getAllTags, getAllSeries } from '@/lib/notion'
+import { PostExplorer } from '@/components/PostExplorer'
+import { SeriesFilter } from '@/components/SeriesFilter'
+import { SubscriptionCta } from '@/components/SubscriptionCta'
 import { TagFilter } from '@/components/TagFilter'
 
 export const revalidate = 3600 // ISR: 1시간마다 재생성
 
+export const metadata: Metadata = {
+  title: 'ryong.log',
+  description: '개발하며 배운 것들을 기록합니다.',
+  alternates: {
+    canonical: '/',
+  },
+}
+
 export default async function HomePage() {
-  const [posts, tags] = await Promise.all([getPosts(), getAllTags()])
+  const [posts, tags, seriesList] = await Promise.all([
+    getPosts(),
+    getAllTags(),
+    getAllSeries(),
+  ])
 
   return (
     <div className="relative left-1/2 w-[min(1200px,calc(100vw-2rem))] -translate-x-1/2">
@@ -22,15 +37,18 @@ export default async function HomePage() {
         </section>
       )}
 
-      <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        {posts.length === 0 ? (
-          <p className="col-span-full py-20 text-center text-zinc-400 dark:text-zinc-400">
-            아직 게시된 글이 없습니다.
-          </p>
-        ) : (
-          posts.map((post) => <PostCard key={post.id} post={post} />)
-        )}
-      </section>
+      {seriesList.length > 0 && (
+        <section className="mb-6">
+          <SeriesFilter seriesList={seriesList} />
+        </section>
+      )}
+
+      <PostExplorer
+        posts={posts}
+        emptyMessage="아직 게시된 글이 없습니다."
+      />
+
+      <SubscriptionCta className="mt-10" />
     </div>
   )
 }

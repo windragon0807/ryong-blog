@@ -3,6 +3,7 @@ export interface Post {
   title: string
   slug: string
   description: string
+  series: string | null
   tags: string[]
   published: boolean
   date: string

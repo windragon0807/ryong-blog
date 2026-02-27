@@ -1,9 +1,9 @@
-import Image from 'next/image'
 import type { ReactNode } from 'react'
 import { getBookmarkMetadata, parseBookmarkUrl } from '@/lib/bookmark'
 import { getHeadingId } from '@/lib/toc'
 import type { Block, KnownBlock, RichText } from '@/types/notion'
 import { CodeBlock } from './CodeBlock'
+import { LightboxImage } from './LightboxImage'
 import { RichTextRenderer } from './RichTextRenderer'
 
 interface RendererContext {
@@ -79,6 +79,7 @@ const knownBlockRenderers = {
 
   code: (block) => (
     <CodeBlock
+      blockId={block.id}
       code={block.code.rich_text.map((token) => token.plain_text).join('')}
       language={block.code.language}
       caption={block.code.caption}
@@ -94,12 +95,12 @@ const knownBlockRenderers = {
     return (
       <figure className="my-6">
         <div className="relative w-full overflow-hidden rounded-xl border border-zinc-200 dark:border-zinc-600">
-          <Image
+          <LightboxImage
             src={src}
             alt={caption.map((token) => token.plain_text).join('') || '이미지'}
             width={800}
             height={450}
-            className="h-auto w-full object-cover"
+            className="h-auto w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
             unoptimized={src.includes('amazonaws') || src.includes('notion')}
           />
         </div>

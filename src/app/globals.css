@@ -67,6 +67,51 @@ body {
   border-radius: 0;
 }
 
+.notion-code pre.shiki code {
+  display: block;
+}
+
+.notion-code pre.shiki .code-line {
+  display: grid;
+  grid-template-columns: 2.9rem minmax(0, 1fr);
+  align-items: stretch;
+  min-height: 1.5rem;
+}
+
+.notion-code pre.shiki .code-line-anchor {
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
+  text-align: right;
+  padding-right: 0.75rem;
+  color: rgba(113, 113, 122, 0.78);
+  border-right: 1px solid rgba(161, 161, 170, 0.24);
+  margin-right: 0.75rem;
+  line-height: 1.5rem;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.notion-code pre.shiki .code-line:hover .code-line-anchor {
+  color: rgba(63, 63, 70, 0.95);
+}
+
+.dark .notion-code pre.shiki .code-line:hover .code-line-anchor {
+  color: rgba(228, 228, 231, 0.96);
+}
+
+.notion-code pre.shiki .code-line-content {
+  min-width: 0;
+}
+
+.notion-code pre.shiki .code-line--highlighted {
+  background: rgba(59, 130, 246, 0.14);
+}
+
+.dark .notion-code pre.shiki .code-line--highlighted {
+  background: rgba(56, 189, 248, 0.16);
+}
+
 html:not([data-code-theme]) .notion-code pre.shiki {
   color: var(--shiki-one-light) !important;
   background-color: var(--shiki-one-light-bg) !important;

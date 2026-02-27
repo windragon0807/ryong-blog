@@ -58,16 +58,27 @@ const fontThemeBootScript = `(() => {
 })();`
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: {
     default: 'ryong.log',
     template: '%s | ryong.log',
   },
   description: '개발 블로그',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
     title: 'ryong.log',
     description: '개발 블로그',
     type: 'website',
     locale: 'ko_KR',
+    url: '/',
+    siteName: 'ryong.log',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ryong.log',
+    description: '개발 블로그',
   },
   icons: {
     icon: [{ url: '/brand/ryonglog-icon.svg', type: 'image/svg+xml' }],
