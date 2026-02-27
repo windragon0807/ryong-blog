@@ -18,6 +18,14 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'JENNY';
+  src: url('/fonts/jenny/JENNY-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -30,6 +38,10 @@ html[data-font-theme='pretendard'] {
 
 html[data-font-theme='maplestory'] {
   --font-user: 'Maplestory OTF', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+}
+
+html[data-font-theme='jenny'] {
+  --font-user: 'JENNY', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
 }
 
 html.dark {
