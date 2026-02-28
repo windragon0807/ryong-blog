@@ -67,6 +67,7 @@ export function PostCard({
                     : '(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw'
                 }
                 unoptimized
+                notionRefresh={{ postId: post.id, kind: 'cover' }}
                 skeletonClassName="absolute inset-0 animate-pulse bg-zinc-200/80 dark:bg-zinc-700/70"
               />
             ) : (
@@ -85,7 +86,12 @@ export function PostCard({
             <div className="flex items-start gap-3">
               {post.icon && (
                 <div className="mt-0.5 shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 p-1 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.03] dark:border-zinc-700 dark:bg-zinc-900/40">
-                  <PostPageIcon icon={post.icon} size={24} className="shrink-0" />
+                  <PostPageIcon
+                    icon={post.icon}
+                    size={24}
+                    postId={post.id}
+                    className="shrink-0"
+                  />
                 </div>
               )}
               <div className="min-w-0 flex-1">

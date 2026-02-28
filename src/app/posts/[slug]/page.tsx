@@ -119,6 +119,7 @@ export default async function PostPage({ params }: PageProps) {
                   className="object-cover"
                   priority
                   unoptimized
+                  notionRefresh={{ postId: post.id, kind: 'cover' }}
                   sizes="(max-width: 768px) 100vw, 768px"
                   skeletonClassName="absolute inset-0 animate-pulse bg-zinc-200/85 dark:bg-zinc-700/70"
                 />
@@ -127,7 +128,7 @@ export default async function PostPage({ params }: PageProps) {
           )}
           {post.icon && (
             <div className="post-hero-icon mb-2">
-              <PostPageIcon icon={post.icon} size={70} />
+              <PostPageIcon icon={post.icon} size={70} postId={post.id} />
             </div>
           )}
           <div className="post-hero-meta mb-3 flex items-center gap-3">

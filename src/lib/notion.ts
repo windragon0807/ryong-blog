@@ -37,6 +37,11 @@ interface DatabaseSchema {
   date: string | null
 }
 
+export interface PostMediaUrls {
+  cover: string | null
+  iconUrl: string | null
+}
+
 function extractRichText(richTextArr: RichText[]): string {
   return richTextArr.map((t) => t.plain_text).join('')
 }
@@ -115,6 +120,24 @@ function normalizeSlug(slug: string): string {
   }
 }
 
+function getPageCoverUrl(page: Pick<PageObjectResponse, 'cover'>): string | null {
+  return page.cover?.type === 'external'
+    ? page.cover.external.url
+    : page.cover?.type === 'file'
+      ? page.cover.file.url
+      : null
+}
+
+function getPageIcon(page: Pick<PageObjectResponse, 'icon'>): Post['icon'] {
+  return page.icon?.type === 'emoji'
+    ? { type: 'emoji' as const, emoji: page.icon.emoji }
+    : page.icon?.type === 'external'
+      ? { type: 'image' as const, url: page.icon.external.url }
+      : page.icon?.type === 'file'
+        ? { type: 'image' as const, url: page.icon.file.url }
+        : null
+}
+
 function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
   const props = page.properties as Record<string, unknown>
 
@@ -163,21 +186,8 @@ function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
       page.created_time ??
       '')
 
-  const cover =
-    page.cover?.type === 'external'
-      ? page.cover.external.url
-      : page.cover?.type === 'file'
-        ? page.cover.file.url
-        : null
-
-  const icon =
-    page.icon?.type === 'emoji'
-      ? { type: 'emoji' as const, emoji: page.icon.emoji }
-      : page.icon?.type === 'external'
-        ? { type: 'image' as const, url: page.icon.external.url }
-        : page.icon?.type === 'file'
-          ? { type: 'image' as const, url: page.icon.file.url }
-          : null
+  const cover = getPageCoverUrl(page)
+  const icon = getPageIcon(page)
 
   return {
     id: page.id,
@@ -423,4 +433,18 @@ export async function getAllSeries(): Promise<string[]> {
     }
   })
   return Array.from(seriesSet).sort()
+}
+
+export async function getPostMediaUrlsById(postId: string): Promise<PostMediaUrls | null> {
+  const page = await notion.pages.retrieve({ page_id: postId })
+  if (!('properties' in page)) {
+    return null
+  }
+
+  const icon = getPageIcon(page)
+
+  return {
+    cover: getPageCoverUrl(page),
+    iconUrl: icon?.type === 'image' ? icon.url : null,
+  }
 }
