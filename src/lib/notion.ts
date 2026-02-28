@@ -448,3 +448,20 @@ export async function getPostMediaUrlsById(postId: string): Promise<PostMediaUrl
     iconUrl: icon?.type === 'image' ? icon.url : null,
   }
 }
+
+export async function getPostByPageId(postId: string): Promise<Post | null> {
+  const page = await notion.pages.retrieve({ page_id: postId })
+
+  if (!('properties' in page)) {
+    return null
+  }
+
+  const parent =
+    page.parent?.type === 'database_id' ? page.parent.database_id ?? null : null
+  if (parent && parent !== DATABASE_ID) {
+    return null
+  }
+
+  const schema = await getDatabaseSchema()
+  return pageToPost(page, schema)
+}

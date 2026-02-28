@@ -77,6 +77,7 @@ npm install
 ```bash
 NOTION_API_KEY=secret_xxx
 NOTION_DATABASE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+NOTION_WEBHOOK_VERIFICATION_TOKEN=
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ```
 
@@ -133,6 +134,15 @@ https://www.notion.so/workspace/8a85c5a7a1d94db4b7b367168fca1e2d?v=...
   - 개발: 120초
   - 운영: 3600초
 
+## Notion Webhook (선택)
+
+실시간에 가깝게 글 변경을 반영하려면 Notion Webhook을 연결하면 됩니다.
+
+- 엔드포인트: `/api/notion-webhook`
+- 초기 검증 요청에서 `verification_token`이 전달됩니다.
+- 이 값을 `NOTION_WEBHOOK_VERIFICATION_TOKEN`으로 환경변수에 설정하면, 이후 이벤트 서명(`X-Notion-Signature`) 검증이 활성화됩니다.
+- 이벤트 수신 시 홈페이지/포스트/태그/시리즈 경로와 Notion 캐시 태그를 즉시 재검증합니다.
+
 ## 스크립트
 
 ```bash
@@ -147,6 +157,7 @@ npm run lint
 - 배포 환경에 아래 환경변수 설정
   - `NOTION_API_KEY`
   - `NOTION_DATABASE_ID`
+  - `NOTION_WEBHOOK_VERIFICATION_TOKEN` (Webhook 연결 시)
   - `NEXT_PUBLIC_SITE_URL` (실제 도메인)
 - Notion Integration이 DB에 초대되어 있는지 확인
 
