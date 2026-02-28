@@ -79,9 +79,24 @@ NOTION_API_KEY=secret_xxx
 NOTION_DATABASE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 NOTION_WEBHOOK_VERIFICATION_TOKEN=
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
+AUTH_SECRET=your-random-secret
+GITHUB_ID=your-github-oauth-app-client-id
+GITHUB_SECRET=your-github-oauth-app-client-secret
+ADMIN_GITHUB_LOGIN=your-github-login
 ```
 
 `.env.example`도 함께 참고하세요.
+
+### 2-1) `/ryong` 관리자 모드 설정
+
+- `/ryong` 경로는 GitHub OAuth 로그인 후 `ADMIN_GITHUB_LOGIN`과 일치하는 계정만 접근 가능합니다.
+- GitHub OAuth App의 callback URL은 아래로 설정하세요.
+
+```txt
+http://localhost:3000/api/auth/callback/github
+```
+
+운영 도메인을 사용할 경우 같은 경로로 도메인만 교체하면 됩니다.
 
 ### 3) 개발 서버 실행
 
@@ -159,6 +174,10 @@ npm run lint
   - `NOTION_DATABASE_ID`
   - `NOTION_WEBHOOK_VERIFICATION_TOKEN` (Webhook 연결 시)
   - `NEXT_PUBLIC_SITE_URL` (실제 도메인)
+  - `AUTH_SECRET`
+  - `GITHUB_ID`
+  - `GITHUB_SECRET`
+  - `ADMIN_GITHUB_LOGIN`
 - Notion Integration이 DB에 초대되어 있는지 확인
 
 ## 커밋 메시지 추천
