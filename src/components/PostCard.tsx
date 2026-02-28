@@ -40,7 +40,7 @@ export function PostCard({
       data-motion-cycle={motionCycle}
     >
       <article
-        className={`post-card-motion post-card-surface overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-[transform,border-color,box-shadow,filter] duration-[460ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.01] dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.04] ${
+        className={`post-card-motion post-card-surface transform-gpu origin-center translate-y-0 scale-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.008] dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.03] ${
           isList ? '' : 'h-full'
         }`}
       >
