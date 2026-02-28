@@ -26,6 +26,24 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'Hancom MalangMalang';
+  src: url('/fonts/hancom-malangmalang/HancomMalangMalang-Regular.otf')
+    format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Hancom MalangMalang';
+  src: url('/fonts/hancom-malangmalang/HancomMalangMalang-Bold.otf')
+    format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -42,6 +60,10 @@ html[data-font-theme='maplestory'] {
 
 html[data-font-theme='jenny'] {
   --font-user: 'JENNY', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
+}
+
+html[data-font-theme='hancom-malangmalang'] {
+  --font-user: 'Hancom MalangMalang', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
 }
 
 html.dark {
