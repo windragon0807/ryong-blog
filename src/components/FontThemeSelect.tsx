@@ -8,6 +8,14 @@ import {
   getFontThemeStack,
   isFontThemeName,
 } from '@/lib/fontThemes'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 
 const STORAGE_KEY = 'font-theme'
 
@@ -30,18 +38,21 @@ export function FontThemeSelect({ className = '' }: FontThemeSelectProps) {
   return (
     <label className="block">
       <span className="sr-only">폰트 테마</span>
-      <select
-        aria-label="폰트 선택"
+      <Select
         value={selectedTheme}
-        onChange={(event) => setSelectedTheme(event.target.value as FontThemeName)}
-        className={`h-9 w-40 shrink-0 rounded-lg border border-zinc-200 bg-white px-2 text-xs text-zinc-700 focus:ring-2 focus:ring-zinc-300 focus:outline-none dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:focus:ring-zinc-500 ${className}`}
+        onValueChange={(value) => setSelectedTheme(value as FontThemeName)}
       >
-        {FONT_THEME_OPTIONS.map((theme) => (
-          <option key={theme.value} value={theme.value}>
-            {theme.label}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger aria-label="폰트 선택" className={cn('h-10 w-full text-sm', className)}>
+          <SelectValue placeholder="폰트를 선택하세요" />
+        </SelectTrigger>
+        <SelectContent position="popper">
+          {FONT_THEME_OPTIONS.map((theme) => (
+            <SelectItem key={theme.value} value={theme.value}>
+              {theme.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </label>
   )
 }

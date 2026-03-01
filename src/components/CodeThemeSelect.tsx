@@ -8,6 +8,14 @@ import {
   type CodeThemeName,
   isCodeThemeName,
 } from '@/lib/codeThemes'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { cn } from '@/lib/utils'
 
 const STORAGE_KEY = 'code-theme'
 
@@ -34,18 +42,24 @@ export function CodeThemeSelect({ className = '' }: CodeThemeSelectProps) {
   return (
     <label className="block">
       <span className="sr-only">코드 테마</span>
-      <select
-        aria-label="코드 테마 선택"
+      <Select
         value={selectedTheme}
-        onChange={(event) => handleChange(event.target.value as CodeThemeName)}
-        className={`h-9 w-44 shrink-0 rounded-lg border border-zinc-200 dark:border-zinc-600 bg-white dark:bg-zinc-800 px-2 text-xs text-zinc-700 dark:text-zinc-200 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:focus:ring-zinc-500 ${className}`}
+        onValueChange={(value) => handleChange(value as CodeThemeName)}
       >
-        {CODE_THEME_OPTIONS.map((theme) => (
-          <option key={theme.value} value={theme.value}>
-            {theme.label}
-          </option>
-        ))}
-      </select>
+        <SelectTrigger
+          aria-label="코드 테마 선택"
+          className={cn('h-10 w-full text-sm', className)}
+        >
+          <SelectValue placeholder="코드 테마를 선택하세요" />
+        </SelectTrigger>
+        <SelectContent position="popper">
+          {CODE_THEME_OPTIONS.map((theme) => (
+            <SelectItem key={theme.value} value={theme.value}>
+              {theme.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </label>
   )
 }
