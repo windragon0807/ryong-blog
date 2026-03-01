@@ -30,7 +30,7 @@ export default async function RyongAdminPage() {
       </header>
 
       <div className="rounded-xl border border-zinc-200 bg-zinc-50 p-5 text-sm text-zinc-700 dark:border-zinc-700 dark:bg-zinc-800/60 dark:text-zinc-200">
-        이후 관리자 기능(이력서 에디터, 내부 관리 도구)을 이 공간에 확장하면 됩니다.
+        이후 관리자 기능(내부 관리 도구)을 이 공간에 확장하면 됩니다.
       </div>
 
       <div className="flex flex-wrap gap-3">

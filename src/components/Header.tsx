@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { AppLauncherMenu } from './AppLauncherMenu'
 import { ThemeSettingsMenu } from './ThemeSettingsMenu'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -27,7 +28,8 @@ export function Header() {
           <ThemeToggle />
         </div>
 
-        <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2">
+        <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2 sm:right-4">
+          <AppLauncherMenu />
           <ThemeSettingsMenu />
         </div>
       </div>
