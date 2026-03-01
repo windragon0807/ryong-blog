@@ -34,6 +34,9 @@ export function PostCard({
   const motionStyle = {
     '--card-delay': `${delayMs}ms`,
   } as CSSProperties
+  const interactionClass = isCompact
+    ? 'transition-[translate,scale,border-color,box-shadow] duration-280 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:scale-[1.004] hover:border-zinc-300 hover:shadow-[0_18px_34px_-24px_rgba(15,23,42,0.42)] dark:hover:border-zinc-500 dark:hover:shadow-[0_20px_42px_-24px_rgba(10,20,35,0.62)]'
+    : 'transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.008] dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.03]'
 
   return (
     <Link
@@ -43,11 +46,11 @@ export function PostCard({
       data-motion-cycle={motionCycle}
     >
       <article
-        className={`post-card-motion post-card-surface transform-gpu origin-center translate-y-0 scale-100 overflow-hidden border border-zinc-200 bg-white transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.008] dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.03] ${
+        className={`post-card-motion post-card-surface transform-gpu origin-center translate-y-0 scale-100 overflow-hidden border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/80 ${
           isCompact ? 'rounded-xl' : 'rounded-2xl'
         } ${
           isList ? '' : 'h-full'
-        }`}
+        } ${interactionClass}`}
       >
         <div className={isList ? 'sm:flex sm:min-h-[13rem]' : ''}>
           <div
@@ -78,13 +81,21 @@ export function PostCard({
             ) : (
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,#dbeafe_0,#dbeafe_28%,transparent_60%),radial-gradient(circle_at_80%_30%,#bfdbfe_0,#bfdbfe_22%,transparent_55%)] dark:bg-[radial-gradient(circle_at_25%_25%,#1e3a8a_0,#1e3a8a_25%,transparent_58%),radial-gradient(circle_at_80%_30%,#1d4ed8_0,#1d4ed8_22%,transparent_52%)]" />
             )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent transition-opacity duration-500 group-hover:opacity-90" />
             <div
-              className="absolute inset-0 opacity-65 mix-blend-soft-light transition-transform duration-500 ease-out group-hover:scale-[1.02]"
-              style={{
-                background: `radial-gradient(circle at 75% 82%, ${accent.soft} 0%, transparent 62%)`,
-              }}
+              className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${
+                isCompact
+                  ? 'from-black/24 via-black/4 to-transparent opacity-75 group-hover:opacity-85'
+                  : 'from-black/35 via-black/5 to-transparent group-hover:opacity-90'
+              }`}
             />
+            {!isCompact && (
+              <div
+                className="absolute inset-0 opacity-65 mix-blend-soft-light transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                style={{
+                  background: `radial-gradient(circle at 75% 82%, ${accent.soft} 0%, transparent 62%)`,
+                }}
+              />
+            )}
           </div>
 
           <div
