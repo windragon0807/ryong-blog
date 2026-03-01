@@ -8,6 +8,7 @@ import { getCoverAccent } from '@/lib/coverAccent'
 interface Props {
   post: Post
   variant?: 'grid' | 'list'
+  density?: 'default' | 'compact'
   motionIndex?: number
   motionCycle?: number
 }
@@ -15,10 +16,12 @@ interface Props {
 export function PostCard({
   post,
   variant = 'grid',
+  density = 'default',
   motionIndex = 0,
   motionCycle = 0,
 }: Props) {
   const isList = variant === 'list'
+  const isCompact = density === 'compact'
   const formattedDate = post.date
     ? new Date(post.date).toLocaleDateString('ko-KR', {
         year: 'numeric',
@@ -40,7 +43,9 @@ export function PostCard({
       data-motion-cycle={motionCycle}
     >
       <article
-        className={`post-card-motion post-card-surface transform-gpu origin-center translate-y-0 scale-100 overflow-hidden rounded-2xl border border-zinc-200 bg-white transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.008] dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.03] ${
+        className={`post-card-motion post-card-surface transform-gpu origin-center translate-y-0 scale-100 overflow-hidden border border-zinc-200 bg-white transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.008] dark:border-zinc-700 dark:bg-zinc-800/80 dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.03] ${
+          isCompact ? 'rounded-xl' : 'rounded-2xl'
+        } ${
           isList ? '' : 'h-full'
         }`}
       >
@@ -82,31 +87,49 @@ export function PostCard({
             />
           </div>
 
-          <div className={`flex flex-col ${isList ? 'flex-1 p-5' : 'p-4'}`}>
+          <div
+            className={`flex flex-col ${
+              isList ? 'flex-1 p-5' : isCompact ? 'p-3' : 'p-4'
+            }`}
+          >
             <div className="flex items-start gap-3">
               {post.icon && (
-                <div className="mt-0.5 shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 p-1 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.03] dark:border-zinc-700 dark:bg-zinc-900/40">
+                <div
+                  className={`mt-0.5 shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.03] dark:border-zinc-700 dark:bg-zinc-900/40 ${
+                    isCompact
+                      ? 'flex h-8 w-8 min-h-8 min-w-8 items-center justify-center p-1'
+                      : 'flex h-10 w-10 min-h-10 min-w-10 items-center justify-center p-1'
+                  }`}
+                >
                   <PostPageIcon
                     icon={post.icon}
-                    size={24}
+                    size={isCompact ? 18 : 24}
                     postId={post.id}
-                    className="shrink-0"
+                    className=""
                   />
                 </div>
               )}
               <div className="min-w-0 flex-1">
                 <h2
                   className={`line-clamp-2 leading-snug font-semibold text-zinc-900 transition-colors duration-300 ease-out group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400 ${
-                    isList ? 'text-[1.72rem]' : 'text-lg'
+                    isList
+                      ? 'text-[1.72rem]'
+                      : isCompact
+                        ? 'text-base'
+                        : 'text-lg'
                   }`}
                 >
                   {post.title}
                 </h2>
-                <time className="mt-2 block text-xs text-zinc-400 dark:text-zinc-400">
+                <time
+                  className={`block text-zinc-400 dark:text-zinc-400 ${
+                    isCompact ? 'mt-1 text-[11px]' : 'mt-2 text-xs'
+                  }`}
+                >
                   {formattedDate}
                 </time>
 
-                {post.description && (
+                {post.description && !isCompact && (
                   <p
                     className={`mt-2 text-sm leading-relaxed text-zinc-500 dark:text-zinc-300 ${
                       isList ? 'line-clamp-3' : 'line-clamp-2'
@@ -116,7 +139,7 @@ export function PostCard({
                   </p>
                 )}
 
-                {(post.series || post.tags.length > 0) && (
+                {!isCompact && (post.series || post.tags.length > 0) && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {post.series && (
                       <span className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300">

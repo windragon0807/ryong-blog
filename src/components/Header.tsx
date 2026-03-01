@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppLauncherMenu } from './AppLauncherMenu'
+import { HeaderSearchOverlay } from './HeaderSearchOverlay'
 import { ThemeSettingsMenu } from './ThemeSettingsMenu'
 import { ThemeToggle } from './ThemeToggle'
 
@@ -29,6 +30,7 @@ export function Header() {
         </div>
 
         <div className="absolute right-3 top-1/2 flex -translate-y-1/2 items-center gap-2 sm:right-4">
+          {isExplorerLayout && <HeaderSearchOverlay />}
           <AppLauncherMenu />
           <ThemeSettingsMenu />
         </div>

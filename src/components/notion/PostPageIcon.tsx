@@ -14,7 +14,7 @@ export function PostPageIcon({ icon, size = 44, postId, className = '' }: Props)
   if (icon.type === 'emoji') {
     return (
       <span
-        className={`inline-flex items-center justify-center leading-none ${className}`.trim()}
+        className={`flex items-center justify-center leading-none ${className}`.trim()}
         style={{ width: size, height: size, fontSize: Math.max(16, Math.round(size * 0.78)) }}
         aria-hidden="true"
       >
@@ -25,16 +25,17 @@ export function PostPageIcon({ icon, size = 44, postId, className = '' }: Props)
 
   return (
     <span
-      className="relative inline-flex"
+      className="relative block overflow-hidden rounded-xl leading-none"
       style={{ width: size, height: size }}
       aria-hidden="true"
     >
       <RetryableImage
         src={icon.url}
         alt=""
-        fill
+        width={size}
+        height={size}
         unoptimized
-        className={`rounded-xl object-cover ${className}`.trim()}
+        className={`h-full w-full object-contain ${className}`.trim()}
         notionRefresh={postId ? { postId, kind: 'icon' } : undefined}
         skeletonClassName="absolute inset-0 animate-pulse rounded-xl bg-zinc-200/80 dark:bg-zinc-700/70"
       />

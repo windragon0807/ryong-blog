@@ -2,6 +2,10 @@
 
 Notion Database를 CMS로 사용하는 Next.js 기반 개인 기술 블로그입니다.
 
+## 프로젝트 문서
+
+- 기능/라우트/운영 지도: [`docs/PROJECT_FEATURES.md`](docs/PROJECT_FEATURES.md)
+
 ## 주요 기능
 
 - Notion DB 글 목록/상세 조회

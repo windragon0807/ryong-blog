@@ -1,10 +1,12 @@
 'use client'
 
 import type { CSSProperties } from 'react'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
 import { useAnimatedPresence } from '@/hooks/useAnimatedPresence'
+import { useDismissablePopover } from '@/hooks/useDismissablePopover'
 import { CodeThemeSelect } from './CodeThemeSelect'
 import { FontThemeSelect } from './FontThemeSelect'
+import { IconControlButton } from './IconControlButton'
 
 export function ThemeSettingsMenu() {
   const [open, setOpen] = useState(false)
@@ -15,49 +17,24 @@ export function ThemeSettingsMenu() {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const panelId = useId()
 
-  useEffect(() => {
-    if (!open) return
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
-        setOpen(false)
-      }
-    }
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setOpen(false)
-      }
-    }
-
-    document.addEventListener('pointerdown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.removeEventListener('pointerdown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [open])
+  useDismissablePopover(open, wrapperRef, setOpen)
 
   return (
     <div ref={wrapperRef} className="relative">
-      <button
-        type="button"
-        aria-label="환경설정 열기"
+      <IconControlButton
+        srLabel="환경설정 열기"
         aria-haspopup="dialog"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         onClick={() => setOpen((previous) => !previous)}
-        className="h-9 w-9 rounded-xl border border-zinc-200 bg-white text-zinc-500 shadow-sm transition-colors hover:bg-zinc-100 hover:text-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-300 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 dark:hover:text-zinc-100 dark:focus:ring-zinc-600"
       >
-        <span className="sr-only">환경설정</span>
         <svg
           aria-hidden="true"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
-          className="mx-auto h-[18px] w-[18px]"
+          className="block h-[18px] w-[18px]"
         >
           <line x1="4" y1="21" x2="4" y2="14" strokeLinecap="round" />
           <line x1="4" y1="10" x2="4" y2="3" strokeLinecap="round" />
@@ -69,7 +46,7 @@ export function ThemeSettingsMenu() {
           <line x1="10" y1="8" x2="14" y2="8" strokeLinecap="round" />
           <line x1="18" y1="16" x2="22" y2="16" strokeLinecap="round" />
         </svg>
-      </button>
+      </IconControlButton>
 
       {isMounted ? (
         <div
