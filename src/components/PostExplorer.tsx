@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react'
 import Fuse from 'fuse.js'
 import type { Post } from '@/types/notion'
 import type { SearchDocument } from '@/lib/postContent'
-import { AnimatedNumber } from './AnimatedNumber'
 import { usePostSearch } from './PostSearchProvider'
 import { PostCard } from './PostCard'
 
@@ -101,22 +100,6 @@ export function PostExplorer({
 
   return (
     <>
-      <section className="mb-6 flex items-center justify-between gap-3">
-        <div className="flex min-w-0 items-center">
-          <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            우측 상단 돋보기 아이콘으로 검색하세요.
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <span
-            key={posts.length}
-            className="inline-flex min-w-[3rem] justify-end text-xs text-zinc-400 transition-all duration-200 ease-out motion-safe:animate-[count-pop_280ms_ease] dark:text-zinc-400"
-          >
-            <AnimatedNumber value={posts.length} />개
-          </span>
-        </div>
-      </section>
-
       <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {posts.length === 0 ? (
           <p className="col-span-full py-20 text-center text-zinc-400 dark:text-zinc-400">
