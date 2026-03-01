@@ -120,8 +120,18 @@ const knownBlockRenderers = {
   },
 
   quote: (block) => (
-    <blockquote className="my-4 rounded-r-lg border-l-4 border-blue-500 bg-blue-50 py-3 pr-4 pl-4 dark:border-blue-400 dark:bg-blue-900/20">
-      <p className="italic text-zinc-700 dark:text-zinc-200">
+    <blockquote className="relative my-5 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 pl-6 dark:border-zinc-700 dark:bg-zinc-800/35">
+      <span
+        aria-hidden
+        className="absolute top-0 left-0 h-full w-1.5 rounded-r-full bg-gradient-to-b from-blue-500 to-cyan-400"
+      />
+      <span
+        aria-hidden
+        className="pointer-events-none absolute top-2 right-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/75 text-[1.35rem] font-serif leading-none text-zinc-300/85 shadow-sm dark:bg-zinc-900/45 dark:text-zinc-500/75"
+      >
+        “
+      </span>
+      <p className="relative pr-8 text-[1.03rem] leading-8 text-zinc-700 dark:text-zinc-200">
         <RichTextRenderer richText={block.quote.rich_text} />
       </p>
     </blockquote>
