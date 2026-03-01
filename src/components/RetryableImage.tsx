@@ -3,10 +3,16 @@
 import Image, { type ImageProps } from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 
-type NotionMediaRefreshConfig = {
-  postId: string
-  kind: 'cover' | 'icon'
-}
+export type NotionMediaRefreshConfig =
+  | {
+      postId: string
+      kind: 'cover' | 'icon'
+    }
+  | {
+      postId: string
+      kind: 'block-image'
+      blockId: string
+    }
 
 interface RetryableImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
   maxRetries?: number
@@ -36,6 +42,7 @@ export function RetryableImage({
   const [retryToken, setRetryToken] = useState(0)
   const [permanentError, setPermanentError] = useState(false)
   const retryCountRef = useRef(0)
+  const backgroundRetryCountRef = useRef(0)
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const mountedRef = useRef(true)
   const refreshAttemptedRef = useRef(false)
@@ -52,18 +59,48 @@ export function RetryableImage({
     }
   }, [])
 
+  const scheduleBackgroundRetry = () => {
+    backgroundRetryCountRef.current += 1
+    const delay = Math.min(12_000, retryDelayMs * (maxRetries + backgroundRetryCountRef.current))
+
+    if (retryTimerRef.current) {
+      clearTimeout(retryTimerRef.current)
+    }
+
+    retryTimerRef.current = setTimeout(() => {
+      if (!mountedRef.current) return
+
+      refreshAttemptedRef.current = false
+      setPermanentError(false)
+      setLoaded(false)
+      setRetryToken((previousToken) => previousToken + 1)
+    }, delay)
+  }
+
   const tryRefreshNotionMedia = async () => {
-    if (!notionRefresh || refreshAttemptedRef.current) {
+    if (!notionRefresh) {
       setPermanentError(true)
       return
     }
 
+    if (refreshAttemptedRef.current) return
+
     refreshAttemptedRef.current = true
-    const refreshedUrl = await resolveNotionMediaUrl(notionRefresh)
+    let refreshedUrl = await resolveNotionMediaUrl(notionRefresh)
+    const currentSrcKey = getSrcKey(currentSrc)
+
+    // If cached URL is the same stale URL, force one uncached refresh attempt.
+    if (refreshedUrl && refreshedUrl === currentSrcKey) {
+      clearNotionMediaCache(notionRefresh)
+      refreshedUrl = await resolveNotionMediaUrl(notionRefresh, { forceRefresh: true })
+    }
 
     if (!mountedRef.current) return
-    if (!refreshedUrl || refreshedUrl === getSrcKey(currentSrc)) {
+    refreshAttemptedRef.current = false
+
+    if (!refreshedUrl || refreshedUrl === currentSrcKey) {
       setPermanentError(true)
+      scheduleBackgroundRetry()
       return
     }
 
@@ -73,6 +110,7 @@ export function RetryableImage({
     }
 
     retryCountRef.current = 0
+    backgroundRetryCountRef.current = 0
     setPermanentError(false)
     setLoaded(false)
     setCurrentSrc(refreshedUrl)
@@ -120,6 +158,8 @@ export function RetryableImage({
               retryTimerRef.current = null
             }
             retryCountRef.current = 0
+            backgroundRetryCountRef.current = 0
+            refreshAttemptedRef.current = false
             if (mountedRef.current) {
               setLoaded(true)
             }
@@ -138,21 +178,58 @@ function getSrcKey(src: ImageProps['src']): string {
   return src.default.src
 }
 
-async function resolveNotionMediaUrl(config: NotionMediaRefreshConfig): Promise<string | null> {
-  const cacheKey = `${config.postId}:${config.kind}`
+async function resolveNotionMediaUrl(
+  config: NotionMediaRefreshConfig,
+  options?: { forceRefresh?: boolean }
+): Promise<string | null> {
+  const cacheKey = getNotionMediaCacheKey(config)
+  if (options?.forceRefresh) {
+    return requestNotionMediaUrl(config, cacheKey, { forceRefresh: true })
+  }
+
   const cached = resolvedNotionMediaCache.get(cacheKey)
   if (cached) return cached
 
   const inflight = inflightNotionMediaRequests.get(cacheKey)
   if (inflight) return inflight
+  return requestNotionMediaUrl(config, cacheKey)
+}
 
-  const request = fetch(
-    `/api/notion-media?postId=${encodeURIComponent(config.postId)}&kind=${encodeURIComponent(config.kind)}`,
-    {
-      method: 'GET',
-      cache: 'no-store',
-    }
-  )
+function clearNotionMediaCache(config: NotionMediaRefreshConfig) {
+  const cacheKey = getNotionMediaCacheKey(config)
+  resolvedNotionMediaCache.delete(cacheKey)
+  inflightNotionMediaRequests.delete(cacheKey)
+}
+
+function getNotionMediaCacheKey(config: NotionMediaRefreshConfig): string {
+  return config.kind === 'block-image'
+    ? `${config.postId}:${config.kind}:${config.blockId}`
+    : `${config.postId}:${config.kind}`
+}
+
+async function requestNotionMediaUrl(
+  config: NotionMediaRefreshConfig,
+  cacheKey: string,
+  options?: { forceRefresh?: boolean }
+): Promise<string | null> {
+  if (options?.forceRefresh) {
+    resolvedNotionMediaCache.delete(cacheKey)
+    inflightNotionMediaRequests.delete(cacheKey)
+  }
+
+  const query = new URLSearchParams({
+    postId: config.postId,
+    kind: config.kind,
+  })
+
+  if (config.kind === 'block-image') {
+    query.set('blockId', config.blockId)
+  }
+
+  const request = fetch(`/api/notion-media?${query.toString()}`, {
+    method: 'GET',
+    cache: 'no-store',
+  })
     .then(async (response) => {
       if (!response.ok) return null
       const data = (await response.json()) as { url?: string | null }

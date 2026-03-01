@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { RetryableImage } from '@/components/RetryableImage'
+import { RetryableImage, type NotionMediaRefreshConfig } from '@/components/RetryableImage'
 import { useAnimatedPresence } from '@/hooks/useAnimatedPresence'
 
 interface Props {
@@ -11,6 +11,7 @@ interface Props {
   height: number
   className?: string
   unoptimized?: boolean
+  notionRefresh?: NotionMediaRefreshConfig
 }
 
 export function LightboxImage({
@@ -20,6 +21,7 @@ export function LightboxImage({
   height,
   className = '',
   unoptimized = false,
+  notionRefresh,
 }: Props) {
   const [open, setOpen] = useState(false)
   const { isMounted, state } = useAnimatedPresence(open, {
@@ -55,12 +57,14 @@ export function LightboxImage({
         aria-label="이미지 확대"
       >
         <RetryableImage
+          key={src}
           src={src}
           alt={alt}
           width={width}
           height={height}
           className={className}
           unoptimized={unoptimized}
+          notionRefresh={notionRefresh}
           skeletonClassName="absolute inset-0 animate-pulse bg-zinc-200/80 dark:bg-zinc-700/65"
         />
       </button>

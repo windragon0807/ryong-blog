@@ -7,20 +7,21 @@ import {
 } from './block-renderers'
 
 interface Props {
+  postId: string
   blocks: Block[]
 }
 
 type ListBlockType = 'bulleted_list_item' | 'numbered_list_item'
 
-export function BlockRenderer({ blocks }: Props) {
+export function BlockRenderer({ postId, blocks }: Props) {
   return (
     <div className="notion-content">
-      <BlockList blocks={blocks} />
+      <BlockList postId={postId} blocks={blocks} />
     </div>
   )
 }
 
-function BlockList({ blocks }: { blocks: Block[] }) {
+function BlockList({ postId, blocks }: { postId: string; blocks: Block[] }) {
   const elements: ReactNode[] = []
   let index = 0
 
@@ -33,12 +34,12 @@ function BlockList({ blocks }: { blocks: Block[] }) {
         index,
         currentBlock.type
       )
-      elements.push(renderListGroup(currentBlock.type, items))
+      elements.push(renderListGroup(postId, currentBlock.type, items))
       index = nextIndex
       continue
     }
 
-    elements.push(<BlockNode key={currentBlock.id} block={currentBlock} />)
+    elements.push(<BlockNode key={currentBlock.id} postId={postId} block={currentBlock} />)
     index++
   }
 
@@ -65,14 +66,14 @@ function collectContiguousListItems(
   return { items, nextIndex: index }
 }
 
-function renderListGroup(listType: ListBlockType, items: Block[]): ReactNode {
+function renderListGroup(postId: string, listType: ListBlockType, items: Block[]): ReactNode {
   const listClass = 'my-3 list-inside space-y-1 pl-4'
 
   if (listType === 'bulleted_list_item') {
     return (
       <ul key={items[0].id} className={`list-disc ${listClass}`}>
         {items.map((item) => (
-          <BlockNode key={item.id} block={item} />
+          <BlockNode key={item.id} postId={postId} block={item} />
         ))}
       </ul>
     )
@@ -81,19 +82,20 @@ function renderListGroup(listType: ListBlockType, items: Block[]): ReactNode {
   return (
     <ol key={items[0].id} className={`list-decimal ${listClass}`}>
       {items.map((item) => (
-        <BlockNode key={item.id} block={item} />
+        <BlockNode key={item.id} postId={postId} block={item} />
       ))}
     </ol>
   )
 }
 
-async function BlockNode({ block }: { block: Block }) {
+async function BlockNode({ postId, block }: { postId: string; block: Block }) {
   if (!isKnownBlock(block)) {
     return renderUnsupportedBlock(block.type)
   }
 
   return renderKnownBlock(block, {
+    postId,
     renderBlocks: (nestedBlocks) =>
-      nestedBlocks.length > 0 ? <BlockList blocks={nestedBlocks} /> : null,
+      nestedBlocks.length > 0 ? <BlockList postId={postId} blocks={nestedBlocks} /> : null,
   })
 }

@@ -449,6 +449,44 @@ export async function getPostMediaUrlsById(postId: string): Promise<PostMediaUrl
   }
 }
 
+function hasBlockId(blocks: Block[], targetBlockId: string): boolean {
+  for (const block of blocks) {
+    if (block.id === targetBlockId) {
+      return true
+    }
+
+    if (!('children' in block)) continue
+
+    const children = block.children
+    if (Array.isArray(children) && children.length > 0) {
+      if (hasBlockId(children as Block[], targetBlockId)) {
+        return true
+      }
+    }
+  }
+
+  return false
+}
+
+export async function getPostImageBlockUrlById(
+  postId: string,
+  blockId: string
+): Promise<string | null> {
+  const pageBlocks = await getPageBlocks(postId)
+  if (!hasBlockId(pageBlocks, blockId)) {
+    return null
+  }
+
+  const block = await notion.blocks.retrieve({ block_id: blockId })
+  if (!('type' in block) || block.type !== 'image') {
+    return null
+  }
+
+  return block.image.type === 'external'
+    ? block.image.external.url
+    : block.image.file.url
+}
+
 export async function getPostByPageId(postId: string): Promise<Post | null> {
   const page = await notion.pages.retrieve({ page_id: postId })
 

@@ -15,7 +15,7 @@ export async function PostBodyStream({ postId, postTitle }: Props) {
 
   return (
     <>
-      <BlockRenderer blocks={blocks} />
+      <BlockRenderer postId={postId} blocks={blocks} />
       <FloatingToc headings={fullTocHeadings} />
     </>
   )
