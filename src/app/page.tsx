@@ -19,6 +19,7 @@ export default async function HomePage() {
     <div className="relative left-1/2 w-[min(1200px,calc(100vw-2rem))] -translate-x-1/2 pt-5 md:pt-6">
       <PostExplorer
         posts={posts}
+        emptyTitle="아직 게시글이 없어요"
         emptyMessage="아직 게시된 글이 없습니다."
       />
     </div>

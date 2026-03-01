@@ -35,8 +35,8 @@ export function PostCard({
     '--card-delay': `${delayMs}ms`,
   } as CSSProperties
   const interactionClass = isCompact
-    ? 'transition-[translate,scale,border-color,box-shadow] duration-280 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:scale-[1.004] hover:border-zinc-300 hover:shadow-[0_18px_34px_-24px_rgba(15,23,42,0.42)] dark:hover:border-zinc-500 dark:hover:shadow-[0_20px_42px_-24px_rgba(10,20,35,0.62)]'
-    : 'transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.45)] hover:brightness-[1.008] dark:hover:border-zinc-500 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.7)] dark:hover:brightness-[1.03]'
+    ? 'transition-[translate,scale,border-color,box-shadow,filter] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:scale-[1.005] hover:border-zinc-300/70 hover:shadow-[0_18px_34px_-24px_rgba(15,23,42,0.32)] dark:hover:border-zinc-500/70 dark:hover:shadow-[0_20px_42px_-24px_rgba(10,20,35,0.54)]'
+    : 'transition-[translate,scale,border-color,box-shadow,filter] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:scale-[1.01] hover:border-zinc-300/75 hover:shadow-[0_22px_45px_-26px_rgba(15,23,42,0.34)] hover:brightness-[1.01] dark:hover:border-zinc-500/72 dark:hover:shadow-[0_24px_55px_-26px_rgba(10,20,35,0.62)] dark:hover:brightness-[1.03]'
 
   return (
     <Link
@@ -46,15 +46,23 @@ export function PostCard({
       data-motion-cycle={motionCycle}
     >
       <article
-        className={`post-card-motion post-card-surface transform-gpu origin-center translate-y-0 scale-100 overflow-hidden border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-800/80 ${
+        className={`post-card-motion post-card-surface glass-card-shell glass-surface relative isolate transform-gpu origin-center translate-y-0 scale-100 overflow-hidden border border-zinc-200/72 bg-white/80 backdrop-blur-[11px] dark:border-zinc-700/68 dark:bg-zinc-800/72 ${
           isCompact ? 'rounded-xl' : 'rounded-2xl'
         } ${
           isList ? '' : 'h-full'
         } ${interactionClass}`}
       >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 z-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          style={{
+            background:
+              'linear-gradient(160deg, rgba(255,255,255,0.26) 2%, rgba(255,255,255,0) 38%), radial-gradient(circle at 84% 12%, rgba(148,163,184,0.18) 0%, rgba(148,163,184,0) 43%)',
+          }}
+        />
         <div className={isList ? 'sm:flex sm:min-h-[13rem]' : ''}>
           <div
-            className={`relative overflow-hidden border-zinc-200/80 dark:border-zinc-700 ${
+            className={`relative z-10 overflow-hidden border-white/65 dark:border-zinc-700/60 ${
               isList
                 ? 'aspect-[16/9] border-b sm:h-auto sm:w-[42%] sm:border-r sm:border-b-0'
                 : 'aspect-[16/9] border-b'
@@ -99,14 +107,14 @@ export function PostCard({
           </div>
 
           <div
-            className={`flex flex-col ${
+            className={`relative z-10 flex flex-col ${
               isList ? 'flex-1 p-5' : isCompact ? 'p-3' : 'p-4'
             }`}
           >
             <div className="flex items-start gap-3">
               {post.icon && (
                 <div
-                  className={`mt-0.5 shrink-0 rounded-lg border border-zinc-200 bg-zinc-50 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.03] dark:border-zinc-700 dark:bg-zinc-900/40 ${
+                  className={`mt-0.5 shrink-0 rounded-lg border border-zinc-200/90 bg-white/75 backdrop-blur-sm transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:scale-[1.03] dark:border-zinc-700/80 dark:bg-zinc-900/72 ${
                     isCompact
                       ? 'flex h-8 w-8 min-h-8 min-w-8 items-center justify-center p-1'
                       : 'flex h-10 w-10 min-h-10 min-w-10 items-center justify-center p-1'
@@ -153,14 +161,14 @@ export function PostCard({
                 {!isCompact && (post.series || post.tags.length > 0) && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {post.series && (
-                      <span className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300">
+                      <span className="inline-flex items-center rounded-md border border-blue-200/95 bg-blue-50/80 px-2 py-0.5 text-xs font-medium text-blue-700 backdrop-blur-sm dark:border-blue-700/80 dark:bg-blue-900/35 dark:text-blue-300">
                         Series · {post.series}
                       </span>
                     )}
                     {post.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
+                        className="inline-flex items-center rounded-md border border-zinc-200/85 bg-zinc-100/75 px-2 py-0.5 text-xs font-medium text-zinc-600 backdrop-blur-sm dark:border-zinc-700/70 dark:bg-zinc-700/65 dark:text-zinc-300"
                       >
                         {tag}
                       </span>

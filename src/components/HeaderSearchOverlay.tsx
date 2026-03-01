@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useAnimatedPresence } from '@/hooks/useAnimatedPresence'
 import { IconControlButton } from './IconControlButton'
+import { EmptyStatePanel } from './EmptyStatePanel'
 import { PostCard } from './PostCard'
 import { usePostSearch } from './PostSearchProvider'
 
@@ -136,7 +137,7 @@ export function HeaderSearchOverlay() {
         className={`relative mx-auto w-[min(1120px,calc(100vw-1.5rem))] overflow-hidden rounded-[24px] border border-zinc-200/90 bg-white/96 p-4 shadow-[0_34px_80px_-32px_rgba(16,24,40,0.72)] backdrop-blur-xl will-change-[transform,opacity] dark:border-zinc-700/80 dark:bg-zinc-900/94 dark:shadow-[0_34px_85px_-28px_rgba(2,6,23,0.82)] ${
           state === 'exiting'
             ? 'translate-y-3 opacity-0 transition-[opacity,transform] duration-180 ease-out'
-            : 'search-overlay-panel-enter translate-y-0 opacity-100'
+            : 'search-overlay-panel-enter glass-surface translate-y-0 opacity-100'
         }`}
       >
         <div
@@ -208,7 +209,7 @@ export function HeaderSearchOverlay() {
           </span>
         </div>
 
-        <div className="relative max-h-[calc(100vh-15.5rem)] overflow-y-auto rounded-2xl border border-zinc-200 bg-gradient-to-b from-zinc-50 to-zinc-100/75 p-3 md:p-4 dark:border-zinc-700 dark:from-zinc-800/70 dark:to-zinc-900/65">
+        <div className="glass-surface relative max-h-[calc(100vh-15.5rem)] overflow-y-auto rounded-2xl border border-zinc-200/90 bg-gradient-to-b from-zinc-50 to-zinc-100/70 p-3 md:p-4 dark:border-zinc-700/80 dark:from-zinc-800/70 dark:to-zinc-900/65">
           <div
             aria-hidden
             className="pointer-events-none absolute inset-0 opacity-60 dark:opacity-35"
@@ -219,26 +220,23 @@ export function HeaderSearchOverlay() {
           />
           <div className="relative">
             {!hasQuery ? (
-              <div className="py-12 text-center">
-                <div className="mx-auto mb-3 inline-flex h-10 w-10 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-500 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-400">
-                  <SearchIcon className="h-5 w-5" />
-                </div>
-                <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
-                  검색어를 입력해 포스트를 찾아보세요.
-                </p>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                  예시: nextjs, lighthouse, zoom
-                </p>
-              </div>
+              <EmptyStatePanel
+                className="mx-auto max-w-xl py-12"
+                icon={<SearchIcon className="h-5 w-5" />}
+                title="검색어를 입력해 포스트를 찾아보세요"
+                description="제목, 본문, 태그를 한 번에 검색할 수 있어요."
+                hints={['nextjs', 'lighthouse', 'zoom']}
+                framed={false}
+              />
             ) : !hasResults ? (
-              <div className="py-12 text-center">
-                <p className="text-sm font-medium text-zinc-600 dark:text-zinc-300">
-                  검색 결과가 없습니다.
-                </p>
-                <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                  다른 키워드로 다시 시도해보세요.
-                </p>
-              </div>
+              <EmptyStatePanel
+                className="mx-auto max-w-xl py-12"
+                icon={<SearchIcon className="h-5 w-5" />}
+                title="검색 결과가 없습니다"
+                description="조금 더 짧은 키워드나 다른 태그로 시도해보세요."
+                hints={['React', 'Notion', '성능 최적화']}
+                framed={false}
+              />
             ) : (
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                 {resultPosts.map((post, index) => (

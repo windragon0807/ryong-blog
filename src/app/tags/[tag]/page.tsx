@@ -47,6 +47,7 @@ export default async function TagPage({ params }: PageProps) {
 
       <PostExplorer
         posts={posts}
+        emptyTitle={`#${decodedTag} 태그 글이 없어요`}
         emptyMessage="해당 태그의 글이 없습니다."
       />
     </div>
