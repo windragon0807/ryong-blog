@@ -19,6 +19,7 @@ interface RetryableImageProps extends Omit<ImageProps, 'onLoad' | 'onError'> {
   retryDelayMs?: number
   skeletonClassName?: string
   notionRefresh?: NotionMediaRefreshConfig
+  onImageResolved?: (dimensions: { naturalWidth: number; naturalHeight: number }) => void
 }
 
 const DEFAULT_SKELETON_CLASS =
@@ -32,6 +33,7 @@ export function RetryableImage({
   retryDelayMs = 450,
   skeletonClassName = DEFAULT_SKELETON_CLASS,
   notionRefresh,
+  onImageResolved,
   className = '',
   src,
   alt,
@@ -152,7 +154,7 @@ export function RetryableImage({
           src={currentSrc}
           alt={alt}
           {...props}
-          onLoad={() => {
+          onLoad={(event) => {
             if (retryTimerRef.current) {
               clearTimeout(retryTimerRef.current)
               retryTimerRef.current = null
@@ -160,6 +162,15 @@ export function RetryableImage({
             retryCountRef.current = 0
             backgroundRetryCountRef.current = 0
             refreshAttemptedRef.current = false
+
+            const imageElement = event.currentTarget
+            if (onImageResolved && imageElement.naturalWidth > 0 && imageElement.naturalHeight > 0) {
+              onImageResolved({
+                naturalWidth: imageElement.naturalWidth,
+                naturalHeight: imageElement.naturalHeight,
+              })
+            }
+
             if (mountedRef.current) {
               setLoaded(true)
             }

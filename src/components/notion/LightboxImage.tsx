@@ -24,6 +24,12 @@ export function LightboxImage({
   notionRefresh,
 }: Props) {
   const [open, setOpen] = useState(false)
+  const [aspectRatio, setAspectRatio] = useState<number>(() => {
+    if (width > 0 && height > 0) {
+      return width / height
+    }
+    return 16 / 9
+  })
   const { isMounted, state } = useAnimatedPresence(open, {
     enterDelayMs: 16,
     exitDurationMs: 180,
@@ -54,6 +60,7 @@ export function LightboxImage({
         type="button"
         onClick={() => setOpen(true)}
         className="group relative block w-full cursor-zoom-in"
+        style={{ aspectRatio }}
         aria-label="이미지 확대"
       >
         <RetryableImage
@@ -65,6 +72,9 @@ export function LightboxImage({
           className={className}
           unoptimized={unoptimized}
           notionRefresh={notionRefresh}
+          onImageResolved={({ naturalWidth, naturalHeight }) => {
+            setAspectRatio(naturalWidth / naturalHeight)
+          }}
           skeletonClassName="absolute inset-0 animate-pulse bg-zinc-200/80 dark:bg-zinc-700/65"
         />
       </button>

@@ -95,13 +95,13 @@ const knownBlockRenderers = {
     const caption = block.image.caption
     return (
       <figure className="my-6">
-        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100/70 dark:border-zinc-600 dark:bg-zinc-800/55">
+        <div className="relative w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100/70 dark:border-zinc-600 dark:bg-zinc-800/55">
           <LightboxImage
             src={src}
             alt={caption.map((token) => token.plain_text).join('') || '이미지'}
             width={800}
             height={450}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+            className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.005]"
             unoptimized={src.includes('amazonaws') || src.includes('notion')}
             notionRefresh={{
               postId: context.postId,
