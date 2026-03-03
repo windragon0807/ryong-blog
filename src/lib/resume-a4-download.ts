@@ -1,6 +1,8 @@
 const A4_WIDTH_PT = 595.28
 const A4_HEIGHT_PT = 841.89
-const MIN_REMAINDER_PT = 1
+const MIN_REMAINDER_PX = 2
+const EXPORT_TARGET_WIDTH_PX = 2000
+const EXPORT_IMAGE_QUALITY = 0.93
 
 function createFileName() {
   const today = new Date()
@@ -18,70 +20,132 @@ async function fetchPdfBytes(pdfUrl: string) {
   return response.arrayBuffer()
 }
 
-function downloadBlobPdf(bytes: Uint8Array, fileName: string) {
-  const arrayBuffer = bytes.buffer.slice(
-    bytes.byteOffset,
-    bytes.byteOffset + bytes.byteLength
-  ) as ArrayBuffer
-  const blob = new Blob([arrayBuffer], { type: 'application/pdf' })
-  const objectUrl = URL.createObjectURL(blob)
-
-  const anchor = document.createElement('a')
-  anchor.href = objectUrl
-  anchor.download = fileName
-  document.body.appendChild(anchor)
-  anchor.click()
-  anchor.remove()
-
-  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000)
+function createCanvas(width: number, height: number) {
+  const canvas = document.createElement('canvas')
+  canvas.width = Math.max(1, Math.floor(width))
+  canvas.height = Math.max(1, Math.floor(height))
+  return canvas
 }
 
-export async function downloadResumeAsA4Pdf(pdfUrl: string, fileName = createFileName()) {
-  const [{ PDFDocument }, pdfBytes] = await Promise.all([
+function yieldToMainThread() {
+  return new Promise<void>((resolve) => {
+    if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+      window.requestAnimationFrame(() => resolve())
+      return
+    }
+
+    window.setTimeout(resolve, 0)
+  })
+}
+
+function canvasToJpegBytes(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Uint8Array>((resolve, reject) => {
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) {
+          reject(new Error('이미지 인코딩에 실패했습니다.'))
+          return
+        }
+
+        try {
+          const arrayBuffer = await blob.arrayBuffer()
+          resolve(new Uint8Array(arrayBuffer))
+        } catch (error) {
+          reject(error)
+        }
+      },
+      'image/jpeg',
+      quality,
+    )
+  })
+}
+
+export async function buildResumeAsA4Pdf(pdfUrl: string, fileName = createFileName()) {
+  const [{ PDFDocument }, pdfjs, pdfBytes] = await Promise.all([
     import('pdf-lib'),
+    import('pdfjs-dist'),
     fetchPdfBytes(pdfUrl),
   ])
 
-  const sourcePdf = await PDFDocument.load(pdfBytes)
+  const { getDocument, GlobalWorkerOptions, version } = pdfjs
+  GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${version}/build/pdf.worker.min.mjs`
+
+  const loadingTask = getDocument({
+    data: pdfBytes,
+    useWorkerFetch: true,
+    withCredentials: false,
+    cMapPacked: true,
+  })
+  const sourcePdf = await loadingTask.promise
+
   const outputPdf = await PDFDocument.create()
-  const sourcePages = sourcePdf.getPages()
+  const a4Ratio = A4_HEIGHT_PT / A4_WIDTH_PT
 
-  for (const sourcePage of sourcePages) {
-    const { width: srcWidth, height: srcHeight } = sourcePage.getSize()
+  for (let pageNumber = 1; pageNumber <= sourcePdf.numPages; pageNumber += 1) {
+    const sourcePage = await sourcePdf.getPage(pageNumber)
+    const baseViewport = sourcePage.getViewport({ scale: 1 })
+    const renderScale = EXPORT_TARGET_WIDTH_PX / baseViewport.width
+    const renderViewport = sourcePage.getViewport({ scale: renderScale })
+    const sliceHeightPx = Math.max(1, Math.floor(renderViewport.width * a4Ratio))
+    const renderCanvas = createCanvas(renderViewport.width, sliceHeightPx)
+    const renderContext = renderCanvas.getContext('2d', { alpha: false })
 
-    if (srcWidth <= 0 || srcHeight <= 0) {
+    if (!renderContext) {
       continue
     }
 
-    const scale = A4_WIDTH_PT / srcWidth
-    const scaledSourceHeight = srcHeight * scale
-    const totalPageCount = Math.max(1, Math.ceil(scaledSourceHeight / A4_HEIGHT_PT))
-    const lastVisibleHeight = scaledSourceHeight - (totalPageCount - 1) * A4_HEIGHT_PT
+    let offsetY = 0
+    const totalHeight = Math.max(1, Math.floor(renderViewport.height))
 
-    // Reuse one embedded page across all output pages to avoid resource duplication.
-    const embeddedPage = await outputPdf.embedPage(sourcePage)
+    while (offsetY < totalHeight) {
+      const remainingHeight = totalHeight - offsetY
+      const currentSliceHeight = Math.min(sliceHeightPx, remainingHeight)
 
-    for (let pageIndex = 0; pageIndex < totalPageCount; pageIndex += 1) {
-      const outPage = outputPdf.addPage([A4_WIDTH_PT, A4_HEIGHT_PT])
-      let y = A4_HEIGHT_PT - scaledSourceHeight + pageIndex * A4_HEIGHT_PT
-
-      // Keep final short slice aligned near the top for more natural reading flow.
-      if (pageIndex === totalPageCount - 1 && lastVisibleHeight > MIN_REMAINDER_PT) {
-        y = A4_HEIGHT_PT - lastVisibleHeight
+      if (currentSliceHeight <= MIN_REMAINDER_PX) {
+        break
       }
 
-      outPage.drawPage(embeddedPage, {
+      if (renderCanvas.height !== currentSliceHeight) {
+        renderCanvas.height = currentSliceHeight
+      }
+
+      renderContext.fillStyle = '#ffffff'
+      renderContext.fillRect(0, 0, renderCanvas.width, currentSliceHeight)
+
+      await sourcePage.render({
+        canvas: renderCanvas,
+        canvasContext: renderContext,
+        viewport: renderViewport,
+        intent: 'print',
+        transform: [1, 0, 0, 1, 0, -offsetY],
+      }).promise
+
+      const imageBytes = await canvasToJpegBytes(renderCanvas, EXPORT_IMAGE_QUALITY)
+      const embeddedImage = await outputPdf.embedJpg(imageBytes)
+      const outputPage = outputPdf.addPage([A4_WIDTH_PT, A4_HEIGHT_PT])
+      const drawnHeightPt = (currentSliceHeight / renderCanvas.width) * A4_WIDTH_PT
+      outputPage.drawImage(embeddedImage, {
         x: 0,
-        y,
+        y: A4_HEIGHT_PT - drawnHeightPt,
         width: A4_WIDTH_PT,
-        height: scaledSourceHeight,
+        height: drawnHeightPt,
       })
+
+      offsetY += currentSliceHeight
+      await yieldToMainThread()
     }
+
+    sourcePage.cleanup()
+    await yieldToMainThread()
   }
 
   const outputBytes = await outputPdf.save({
     useObjectStreams: true,
     addDefaultPage: false,
   })
-  downloadBlobPdf(outputBytes, fileName)
+
+  return {
+    bytes: outputBytes,
+    fileName,
+  }
 }
