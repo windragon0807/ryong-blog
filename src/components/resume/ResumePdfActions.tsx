@@ -1,0 +1,71 @@
+'use client'
+
+import { useCallback } from 'react'
+
+function DownloadIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
+      <path
+        d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function PrintIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
+      <path
+        d="M7 8V4h10v4M7 14H5a2 2 0 0 1-2-2v-2a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v2a2 2 0 0 1-2 2h-2m-10 0h10v6H7z"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+const actionButtonClassName =
+  'inline-flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:border-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100'
+
+export function ResumePdfActions({ pdfUrl }: { pdfUrl: string }) {
+  const handlePrint = useCallback(() => {
+    const iframe = document.createElement('iframe')
+    iframe.style.position = 'fixed'
+    iframe.style.right = '0'
+    iframe.style.bottom = '0'
+    iframe.style.width = '0'
+    iframe.style.height = '0'
+    iframe.style.border = '0'
+    iframe.src = pdfUrl
+
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow?.focus()
+        iframe.contentWindow?.print()
+      } catch {
+        window.open(pdfUrl, '_blank', 'noopener,noreferrer')
+      } finally {
+        window.setTimeout(() => iframe.remove(), 1500)
+      }
+    }
+
+    document.body.appendChild(iframe)
+  }, [pdfUrl])
+
+  return (
+    <div className="flex items-center justify-end gap-2">
+      <a href={pdfUrl} download className={actionButtonClassName}>
+        <DownloadIcon className="h-4 w-4" />
+        다운로드
+      </a>
+      <button type="button" onClick={handlePrint} className={actionButtonClassName}>
+        <PrintIcon className="h-4 w-4" />
+        인쇄
+      </button>
+    </div>
+  )
+}
