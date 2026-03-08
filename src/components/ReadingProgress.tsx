@@ -35,7 +35,7 @@ export function ReadingProgress() {
   return (
     <div className="pointer-events-none fixed top-14 left-0 z-40 h-[3px] w-full bg-transparent">
       <div
-        className="h-full origin-left bg-gradient-to-r from-blue-500 via-cyan-500 to-emerald-400 shadow-[0_0_12px_rgba(59,130,246,0.5)] transition-transform duration-150"
+        className="themed-reading-progress h-full origin-left transition-transform duration-150"
         style={{ transform: `scaleX(${progress})` }}
       />
     </div>

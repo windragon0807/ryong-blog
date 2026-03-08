@@ -8,6 +8,11 @@ import { Header } from '@/components/Header'
 import { PostSearchProvider } from '@/components/PostSearchProvider'
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
+import {
+  BLOG_THEME_PALETTES,
+  BLOG_THEME_VALUES,
+  DEFAULT_BLOG_THEME,
+} from '@/lib/blogThemes'
 import { CODE_THEME_STYLE_TEXT, CODE_THEME_VALUES } from '@/lib/codeThemes'
 import {
   DEFAULT_FONT_THEME,
@@ -61,6 +66,48 @@ const fontThemeBootScript = `(() => {
   }
 })();`
 
+const blogThemeBootScript = `(() => {
+  const applyTheme = (theme, palette) => {
+    const root = document.documentElement;
+    root.setAttribute('data-blog-theme', theme);
+    root.style.setProperty('--theme-accent', palette.accent);
+    root.style.setProperty('--theme-accent-dark', palette.accentDark);
+    root.style.setProperty('--theme-selection-bg', palette.selection);
+    root.style.setProperty('--theme-progress-start', palette.progressStart);
+    root.style.setProperty('--theme-progress-mid', palette.progressMid);
+    root.style.setProperty('--theme-progress-end', palette.progressEnd);
+    root.style.setProperty('--theme-progress-glow', palette.progressGlow);
+    root.style.setProperty('--theme-progress-dark-start', palette.progressDarkStart);
+    root.style.setProperty('--theme-progress-dark-mid', palette.progressDarkMid);
+    root.style.setProperty('--theme-progress-dark-end', palette.progressDarkEnd);
+    root.style.setProperty('--theme-progress-dark-glow', palette.progressDarkGlow);
+    root.style.setProperty('--theme-inline-code-bg', palette.inlineCodeBg);
+    root.style.setProperty('--theme-inline-code-border', palette.inlineCodeBorder);
+    root.style.setProperty('--theme-inline-code-text', palette.inlineCodeText);
+    root.style.setProperty('--theme-inline-code-dark-bg', palette.inlineCodeDarkBg);
+    root.style.setProperty('--theme-inline-code-dark-border', palette.inlineCodeDarkBorder);
+    root.style.setProperty('--theme-inline-code-dark-text', palette.inlineCodeDarkText);
+  };
+
+  try {
+    const supportedThemes = ${JSON.stringify(BLOG_THEME_VALUES)};
+    const defaultTheme = ${JSON.stringify(DEFAULT_BLOG_THEME)};
+    const palettes = ${JSON.stringify(BLOG_THEME_PALETTES)};
+    const stored = localStorage.getItem('blog-theme');
+    const isUserSetTheme = localStorage.getItem('blog-theme-user-set') === 'true';
+    const isLegacyExplicitTheme = stored && supportedThemes.includes(stored) && stored !== 'moss';
+    const theme = (isUserSetTheme || isLegacyExplicitTheme) && stored && supportedThemes.includes(stored)
+      ? stored
+      : defaultTheme;
+    const palette = palettes[theme] || palettes[defaultTheme];
+    applyTheme(theme, palette);
+  } catch {
+    applyTheme(${JSON.stringify(DEFAULT_BLOG_THEME)}, ${JSON.stringify(
+      BLOG_THEME_PALETTES[DEFAULT_BLOG_THEME]
+    )});
+  }
+})();`
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: {
@@ -107,6 +154,9 @@ export default function RootLayout({
       >
         <Script id="code-theme-init" strategy="beforeInteractive">
           {codeThemeBootScript}
+        </Script>
+        <Script id="blog-theme-init" strategy="beforeInteractive">
+          {blogThemeBootScript}
         </Script>
         <Script id="font-theme-init" strategy="beforeInteractive">
           {fontThemeBootScript}

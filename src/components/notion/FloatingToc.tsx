@@ -128,8 +128,9 @@ export function FloatingToc({ headings }: Props) {
         <div ref={trackRef} className="floating-toc-track relative">
           <span
             aria-hidden
-            className="toc-active-rail pointer-events-none absolute left-[-17px] w-[2px] rounded-full bg-zinc-700/85 dark:bg-zinc-100/90"
+            className="toc-active-rail pointer-events-none absolute left-[-17px] w-[2px] rounded-full"
             style={{
+              backgroundColor: 'var(--theme-accent-current)',
               transform: `translateY(${indicatorTop}px)`,
               height: `${Math.max(16, indicatorHeight)}px`,
               opacity: indicatorHeight > 0 ? 1 : 0,
@@ -153,6 +154,7 @@ export function FloatingToc({ headings }: Props) {
                   }}
                   href={`#${heading.id}`}
                   onClick={handleMove(heading.id)}
+                  style={isActive ? { color: 'var(--theme-accent-current)' } : undefined}
                   className={`block py-0.5 pr-2 text-[14px] leading-[1.45] font-medium transition-colors ${indent} ${
                     isActive
                       ? 'text-zinc-900 dark:text-zinc-100'

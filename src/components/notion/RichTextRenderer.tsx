@@ -17,7 +17,7 @@ export function RichTextRenderer({ richText }: Props) {
           node = (
             <code
               key={i}
-              className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-sm font-mono text-blue-700 dark:border-cyan-700/60 dark:bg-cyan-900/30 dark:text-cyan-200"
+              className="themed-inline-code inline-flex items-center rounded-md border px-1.5 py-0.5 text-sm font-mono transition-colors"
             >
               {node}
             </code>
