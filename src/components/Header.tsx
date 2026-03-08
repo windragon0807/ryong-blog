@@ -15,7 +15,7 @@ export function Header() {
     pathname.startsWith('/series/')
 
   return (
-    <header className="glass-surface sticky top-0 z-50 w-full border-b border-zinc-200/90 bg-white/78 backdrop-blur-xl dark:border-zinc-700/80 dark:bg-zinc-900/72">
+    <header className="glass-surface header-sticky top-0 z-50 w-full border-b border-zinc-200/80 dark:border-zinc-700/70">
       <div className="relative h-14">
         <div
           className={`${isExplorerLayout ? 'max-w-[1200px]' : 'max-w-3xl'} mx-auto h-full px-4 flex items-center justify-between`}

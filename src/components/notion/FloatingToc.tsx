@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getLenisInstance } from '@/lib/lenis'
 import type { TocHeading } from '@/lib/toc'
 
@@ -15,7 +15,23 @@ export function FloatingToc({ headings }: Props) {
   const isManualScrollingRef = useRef(false)
   const manualScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const listRef = useRef<HTMLUListElement | null>(null)
+  const trackRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
+
+  const updateIndicator = useCallback((targetId: string) => {
+    const trackElement = trackRef.current
+    const activeElement = itemRefs.current[targetId]
+    if (!trackElement || !activeElement) return
+
+    const trackHeight = Math.floor(trackElement.getBoundingClientRect().height)
+    const rawTop = activeElement.offsetTop
+    const remainingHeight = Math.max(16, trackHeight - rawTop)
+    const nextHeight = Math.max(16, Math.min(activeElement.offsetHeight, remainingHeight))
+    const nextTop = Math.min(rawTop, Math.max(0, trackHeight - nextHeight))
+
+    setIndicatorTop(nextTop)
+    setIndicatorHeight(nextHeight)
+  }, [])
 
   const visibleHeadings = useMemo(
     () => headings.filter((heading) => heading.text.trim().length > 0),
@@ -29,26 +45,17 @@ export function FloatingToc({ headings }: Props) {
   }, [activeId, visibleHeadings])
 
   useEffect(() => {
-    const listElement = listRef.current
-    if (!listElement) return
-    const activeElement = itemRefs.current[currentActiveId]
-    if (!activeElement) return
-
-    setIndicatorTop(activeElement.offsetTop)
-    setIndicatorHeight(activeElement.offsetHeight)
-  }, [currentActiveId, visibleHeadings])
+    updateIndicator(currentActiveId)
+  }, [currentActiveId, updateIndicator, visibleHeadings])
 
   useEffect(() => {
     const handleResize = () => {
-      const activeElement = itemRefs.current[currentActiveId]
-      if (!activeElement) return
-      setIndicatorTop(activeElement.offsetTop)
-      setIndicatorHeight(activeElement.offsetHeight)
+      updateIndicator(currentActiveId)
     }
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [currentActiveId])
+  }, [currentActiveId, updateIndicator])
 
   useEffect(() => {
     if (visibleHeadings.length === 0) return
@@ -118,7 +125,7 @@ export function FloatingToc({ headings }: Props) {
   return (
     <aside className="fixed top-24 right-[max(1rem,calc((100vw-48rem)/2-17rem))] z-40 hidden w-60 xl:block">
       <nav className="max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-zinc-200 pl-4 dark:border-zinc-700">
-        <div className="relative">
+        <div ref={trackRef} className="floating-toc-track relative">
           <span
             aria-hidden
             className="toc-active-rail pointer-events-none absolute left-[-17px] w-[2px] rounded-full bg-zinc-700/85 dark:bg-zinc-100/90"
