@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import Script from 'next/script'
+import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from 'next-themes'
 import { Header } from '@/components/Header'
 import { PostSearchProvider } from '@/components/PostSearchProvider'
@@ -117,6 +119,8 @@ export default function RootLayout({
             <ScrollToTopButton />
           </PostSearchProvider>
         </ThemeProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )

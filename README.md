@@ -68,6 +68,13 @@ public
 
 ## 시작하기
 
+### 0) Node 버전 맞추기
+
+이 프로젝트는 `Node 24.x` 기준으로 동작합니다.
+
+- `nvm`/`fnm`/`asdf`/`mise` 같은 버전 매니저를 쓴다면 프로젝트 루트에서 `24` 버전을 사용하세요.
+- `.nvmrc`, `.node-version` 파일이 포함되어 있어서 지원하는 도구는 자동으로 인식할 수 있습니다.
+
 ### 1) 설치
 
 ```bash
@@ -82,7 +89,7 @@ npm install
 NOTION_API_KEY=secret_xxx
 NOTION_DATABASE_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 NOTION_WEBHOOK_VERIFICATION_TOKEN=
-NEXT_PUBLIC_SITE_URL=http://localhost:3000
+NEXT_PUBLIC_SITE_URL=http://localhost:3200
 AUTH_SECRET=your-random-secret
 GITHUB_ID=your-github-oauth-app-client-id
 GITHUB_SECRET=your-github-oauth-app-client-secret
@@ -97,7 +104,7 @@ ADMIN_GITHUB_LOGIN=your-github-login
 - GitHub OAuth App의 callback URL은 아래로 설정하세요.
 
 ```txt
-http://localhost:3000/api/auth/callback/github
+http://localhost:3200/api/auth/callback/github
 ```
 
 운영 도메인을 사용할 경우 같은 경로로 도메인만 교체하면 됩니다.
@@ -108,11 +115,13 @@ http://localhost:3000/api/auth/callback/github
 npm run dev
 ```
 
-기본 포트는 `3000`입니다.  
-`3001`로 실행하려면:
+기본 포트는 `3200`입니다.  
+다른 포트로 실행하려면 스크립트를 직접 수정하거나 `next dev -p <port>` 형태로 실행하세요.
+
+예시:
 
 ```bash
-npm run dev -- --port 3001
+npx next dev -p 3001
 ```
 
 ## Notion DB 설정 가이드
