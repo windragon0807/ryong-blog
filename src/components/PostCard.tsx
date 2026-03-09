@@ -2,7 +2,6 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import type { Post } from '@/types/notion'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
-import { PostCoverArtwork } from '@/components/PostCoverArtwork'
 import { RetryableImage } from '@/components/RetryableImage'
 import { getCoverAccent } from '@/lib/coverAccent'
 
@@ -23,6 +22,8 @@ export function PostCard({
 }: Props) {
   const isList = variant === 'list'
   const isCompact = density === 'compact'
+  const coverSrc = post.cover
+  const hasCover = Boolean(coverSrc)
   const formattedDate = post.date
     ? new Date(post.date).toLocaleDateString('ko-KR', {
         year: 'numeric',
@@ -68,13 +69,17 @@ export function PostCard({
                 ? 'aspect-[16/9] border-b sm:h-auto sm:w-[42%] sm:border-r sm:border-b-0'
                 : 'aspect-[16/9] border-b'
             }`}
-            style={{
-              backgroundImage: `radial-gradient(circle at 18% 20%, ${accent.light} 0%, transparent 48%), radial-gradient(circle at 85% 24%, ${accent.dark} 0%, transparent 52%)`,
-            }}
+            style={
+              hasCover
+                ? {
+                    backgroundImage: `radial-gradient(circle at 18% 20%, ${accent.light} 0%, transparent 48%), radial-gradient(circle at 85% 24%, ${accent.dark} 0%, transparent 52%)`,
+                  }
+                : undefined
+            }
           >
-            {post.cover ? (
+            {coverSrc ? (
               <RetryableImage
-                src={post.cover}
+                src={coverSrc}
                 alt={`${post.title} 배너`}
                 fill
                 className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
@@ -88,16 +93,18 @@ export function PostCard({
                 skeletonClassName="absolute inset-0 animate-pulse bg-zinc-200/80 dark:bg-zinc-700/70"
               />
             ) : (
-              <PostCoverArtwork post={post} compact={isCompact} />
+              <div className="absolute inset-0 bg-zinc-200 dark:bg-zinc-800" />
             )}
-            <div
-              className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${
-                isCompact
-                  ? 'from-black/24 via-black/4 to-transparent opacity-75 group-hover:opacity-85'
-                  : 'from-black/35 via-black/5 to-transparent group-hover:opacity-90'
-              }`}
-            />
-            {!isCompact && (
+            {hasCover && (
+              <div
+                className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${
+                  isCompact
+                    ? 'from-black/24 via-black/4 to-transparent opacity-75 group-hover:opacity-85'
+                    : 'from-black/35 via-black/5 to-transparent group-hover:opacity-90'
+                }`}
+              />
+            )}
+            {hasCover && !isCompact && (
               <div
                 className="absolute inset-0 opacity-65 mix-blend-soft-light transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                 style={{

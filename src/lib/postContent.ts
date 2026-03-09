@@ -21,7 +21,7 @@ export interface ReadingStats {
   minutes: number
 }
 
-export function extractPlainTextFromBlocks(blocks: Block[]): string {
+function extractPlainTextFromBlocks(blocks: Block[]): string {
   const fragments: string[] = []
 
   const walk = (items: Block[]) => {
@@ -126,7 +126,7 @@ export function extractPlainTextFromBlocks(blocks: Block[]): string {
     .join('\n')
 }
 
-export function estimateReadingStats(text: string): ReadingStats {
+function estimateReadingStats(text: string): ReadingStats {
   const normalized = text.trim()
   if (!normalized) {
     return { words: 0, minutes: 1 }

@@ -25,10 +25,6 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: '**.notionusercontent.com',
       },
-      {
-        protocol: 'https',
-        hostname: 'images.unsplash.com',
-      },
     ],
   },
 };

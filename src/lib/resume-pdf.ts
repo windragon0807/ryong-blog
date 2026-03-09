@@ -12,7 +12,7 @@ function getBlobCommandOptions() {
   return token ? { token } : {}
 }
 
-export function getResumePdfBlobPath() {
+function getResumePdfBlobPath() {
   return process.env.RESUME_PDF_BLOB_PATH?.trim() || DEFAULT_RESUME_PDF_BLOB_PATH
 }
 
