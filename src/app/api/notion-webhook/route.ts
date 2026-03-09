@@ -85,6 +85,7 @@ function revalidateCommonPaths() {
   revalidateTag(NOTION_CACHE_TAGS.blocks, 'max')
 
   revalidatePath('/')
+  revalidatePath('/portfolio')
   revalidatePath('/sitemap.xml')
   revalidatePath('/api/search-index')
   revalidatePath('/posts/[slug]', 'page')

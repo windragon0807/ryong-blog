@@ -71,6 +71,7 @@ export async function uploadResumePdf(file: File) {
     ...getBlobCommandOptions(),
     access: 'public',
     addRandomSuffix: false,
+    allowOverwrite: true,
     contentType: 'application/pdf',
     cacheControlMaxAge: 60,
   })

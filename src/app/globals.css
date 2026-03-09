@@ -471,6 +471,97 @@ html.dark:not([data-code-theme]) .notion-code pre.shiki span {
   animation: hero-fade-up 440ms cubic-bezier(0.22, 1, 0.36, 1) 280ms both;
 }
 
+@keyframes resume-skeleton-shimmer {
+  0% {
+    transform: translateX(0) skewX(-18deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.48;
+  }
+  100% {
+    transform: translateX(340%) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes resume-skeleton-drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(10px, -10px, 0) scale(1.03);
+  }
+}
+
+.resume-skeleton-shimmer {
+  animation: resume-skeleton-shimmer 3.2s linear infinite;
+}
+
+.resume-skeleton-drift {
+  animation: resume-skeleton-drift 6.8s ease-in-out infinite;
+}
+
+@keyframes brand-type-loop {
+  0%,
+  7% {
+    max-width: 0;
+  }
+  36%,
+  86% {
+    max-width: 100%;
+  }
+  100% {
+    max-width: 0;
+  }
+}
+
+@keyframes brand-caret-blink {
+  0%,
+  45% {
+    border-right-color: currentColor;
+  }
+  46%,
+  100% {
+    border-right-color: transparent;
+  }
+}
+
+.brand-link {
+  position: relative;
+}
+
+.brand-base {
+  transition: opacity 140ms ease;
+}
+
+.brand-typing-layer {
+  pointer-events: none;
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: inline-block;
+  width: 100%;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  border-right: 1.5px solid transparent;
+}
+
+.brand-link:hover .brand-base,
+.brand-link:focus-visible .brand-base {
+  opacity: 0;
+}
+
+.brand-link:hover .brand-typing-layer,
+.brand-link:focus-visible .brand-typing-layer {
+  opacity: 1;
+  animation:
+    brand-type-loop 4.2s steps(var(--brand-steps, 10), end) infinite,
+    brand-caret-blink 980ms step-end infinite;
+}
+
 .toc-active-rail {
   transition:
     transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -595,7 +686,20 @@ html.dark:not([data-code-theme]) .notion-code pre.shiki span {
   .post-hero-meta,
   .post-hero-title,
   .post-hero-description,
+  .resume-skeleton-shimmer,
+  .resume-skeleton-drift,
   .settings-item {
+    animation: none !important;
+  }
+
+  .brand-link:hover .brand-base,
+  .brand-link:focus-visible .brand-base {
+    opacity: 1;
+  }
+
+  .brand-link:hover .brand-typing-layer,
+  .brand-link:focus-visible .brand-typing-layer {
+    opacity: 0;
     animation: none !important;
   }
 
@@ -609,5 +713,9 @@ html.dark:not([data-code-theme]) .notion-code pre.shiki span {
   .lightbox-panel,
   .code-copy-toast {
     transition: none !important;
+  }
+
+  .resume-loading-shell .animate-pulse {
+    animation: none !important;
   }
 }

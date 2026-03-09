@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import type { Post } from '@/types/notion'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
+import { PostCoverArtwork } from '@/components/PostCoverArtwork'
 import { RetryableImage } from '@/components/RetryableImage'
 import { getCoverAccent } from '@/lib/coverAccent'
 
@@ -87,7 +88,7 @@ export function PostCard({
                 skeletonClassName="absolute inset-0 animate-pulse bg-zinc-200/80 dark:bg-zinc-700/70"
               />
             ) : (
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,#dbeafe_0,#dbeafe_28%,transparent_60%),radial-gradient(circle_at_80%_30%,#bfdbfe_0,#bfdbfe_22%,transparent_55%)] dark:bg-[radial-gradient(circle_at_25%_25%,#1e3a8a_0,#1e3a8a_25%,transparent_58%),radial-gradient(circle_at_80%_30%,#1d4ed8_0,#1d4ed8_22%,transparent_52%)]" />
+              <PostCoverArtwork post={post} compact={isCompact} />
             )}
             <div
               className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${

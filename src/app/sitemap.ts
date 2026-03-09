@@ -1,12 +1,18 @@
 import type { MetadataRoute } from 'next'
-import { getPosts, getAllTags, getAllSeries } from '@/lib/notion'
+import {
+  getAllContentPosts,
+  getAllTags,
+  getAllSeries,
+  getPortfolioPosts,
+} from '@/lib/notion'
 
 export const revalidate = 3600
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-  const [posts, tags, seriesList] = await Promise.all([
-    getPosts(),
+  const [posts, portfolioPosts, tags, seriesList] = await Promise.all([
+    getAllContentPosts(),
+    getPortfolioPosts(),
     getAllTags(),
     getAllSeries(),
   ])
@@ -38,6 +44,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(),
       changeFrequency: 'daily',
       priority: 1,
+    },
+    {
+      url: `${siteUrl}/portfolio`,
+      lastModified:
+        portfolioPosts.length > 0
+          ? new Date(
+              portfolioPosts.reduce((latest, post) =>
+                new Date(post.date).getTime() > new Date(latest.date).getTime()
+                  ? post
+                  : latest
+              ).date
+            )
+          : new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
     },
     ...postEntries,
     ...tagEntries,

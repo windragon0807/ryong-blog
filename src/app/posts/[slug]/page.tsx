@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
+import { HeaderBrandScopeHydrator } from '@/components/HeaderBrandScopeHydrator'
 import { getPostBySlug, getAllSlugs } from '@/lib/notion'
 import { getRelatedPosts } from '@/lib/postContent'
 import { ReadingProgress } from '@/components/ReadingProgress'
@@ -101,6 +102,9 @@ export default async function PostPage({ params }: PageProps) {
 
   return (
     <>
+      <HeaderBrandScopeHydrator
+        scope={post.source === 'portfolio' ? 'portfolio' : 'log'}
+      />
       <ReadingProgress />
       <script
         type="application/ld+json"

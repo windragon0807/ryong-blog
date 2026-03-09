@@ -1,7 +1,7 @@
 import { Client } from '@notionhq/client'
 import { unstable_cache } from 'next/cache'
 import { cache } from 'react'
-import type { Post, Block, RichText } from '@/types/notion'
+import type { Post, PostSource, Block, RichText } from '@/types/notion'
 import type {
   PageObjectResponse,
   BlockObjectResponse,
@@ -13,7 +13,12 @@ const notion = new Client({
   auth: process.env.NOTION_API_KEY,
 })
 
-const DATABASE_ID = process.env.NOTION_DATABASE_ID!
+const BLOG_DATABASE_ID = process.env.NOTION_DATABASE_ID!
+const PORTFOLIO_DATABASE_ID =
+  process.env.NOTION_PORTFOLIO_DATABASE_ID?.trim() || '31d3d4af55eb80989dddeb5baa502d11'
+const CONTENT_DATABASE_IDS = Array.from(
+  new Set([BLOG_DATABASE_ID, PORTFOLIO_DATABASE_ID].filter(Boolean))
+)
 const CACHE_TTL_SECONDS = process.env.NODE_ENV === 'development' ? 120 : 3600
 
 export const NOTION_CACHE_TAGS = {
@@ -70,36 +75,38 @@ function findProperty(
   return null
 }
 
-const getDatabaseSchemaCached = unstable_cache(async (): Promise<DatabaseSchema> => {
-  const database = await notion.databases.retrieve({ database_id: DATABASE_ID })
-  const properties = (database as { properties: Record<string, { type: string }> })
-    .properties
+async function getDatabaseSchemaCached(databaseId: string): Promise<DatabaseSchema> {
+  return unstable_cache(async (): Promise<DatabaseSchema> => {
+    const database = await notion.databases.retrieve({ database_id: databaseId })
+    const properties = (database as { properties: Record<string, { type: string }> })
+      .properties
 
-  return {
-    title: findProperty(properties, ['title', '이름', 'name'], 'title'),
-    slug: findProperty(properties, ['slug', '슬러그'], 'rich_text'),
-    description: findProperty(
-      properties,
-      ['description', '요약', '설명', 'excerpt'],
-      'rich_text'
-    ),
-    seriesSelect: findProperty(properties, ['series', '시리즈'], 'select'),
-    seriesRich: findProperty(properties, ['series', '시리즈'], 'rich_text'),
-    tags: findProperty(properties, ['tags', 'tag', '태그'], 'multi_select'),
-    published: findProperty(
-      properties,
-      ['published', 'publish', '공개', '게시'],
-      'checkbox'
-    ),
-    date: findProperty(properties, ['date', 'publishedat', '날짜'], 'date'),
-  }
-}, [`notion-schema:${DATABASE_ID}`], {
-  revalidate: CACHE_TTL_SECONDS,
-  tags: [NOTION_CACHE_TAGS.schema],
-})
+    return {
+      title: findProperty(properties, ['title', '이름', 'name'], 'title'),
+      slug: findProperty(properties, ['slug', '슬러그'], 'rich_text'),
+      description: findProperty(
+        properties,
+        ['description', '요약', '설명', 'excerpt'],
+        'rich_text'
+      ),
+      seriesSelect: findProperty(properties, ['series', '시리즈'], 'select'),
+      seriesRich: findProperty(properties, ['series', '시리즈'], 'rich_text'),
+      tags: findProperty(properties, ['tags', 'tag', '태그'], 'multi_select'),
+      published: findProperty(
+        properties,
+        ['published', 'publish', '공개', '게시'],
+        'checkbox'
+      ),
+      date: findProperty(properties, ['date', 'publishedat', '날짜'], 'date'),
+    }
+  }, [`notion-schema:${databaseId}`], {
+    revalidate: CACHE_TTL_SECONDS,
+    tags: [NOTION_CACHE_TAGS.schema],
+  })()
+}
 
-const getDatabaseSchema = cache(async (): Promise<DatabaseSchema> => {
-  return getDatabaseSchemaCached()
+const getDatabaseSchema = cache(async (databaseId: string): Promise<DatabaseSchema> => {
+  return getDatabaseSchemaCached(databaseId)
 })
 
 function slugify(input: string): string {
@@ -138,7 +145,15 @@ function getPageIcon(page: Pick<PageObjectResponse, 'icon'>): Post['icon'] {
         : null
 }
 
-function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
+function getPostSource(databaseId: string): PostSource {
+  return databaseId === PORTFOLIO_DATABASE_ID ? 'portfolio' : 'blog'
+}
+
+function pageToPost(
+  page: PageObjectResponse,
+  schema: DatabaseSchema,
+  source: PostSource
+): Post {
   const props = page.properties as Record<string, unknown>
 
   const titleProp = schema.title ? props[schema.title] : undefined
@@ -200,10 +215,11 @@ function pageToPost(page: PageObjectResponse, schema: DatabaseSchema): Post {
     date,
     icon,
     cover,
+    source,
   }
 }
 
-async function queryAllPages(params: {
+async function queryAllPages(databaseId: string, params: {
   filter?: QueryDatabaseParameters['filter']
   sorts?: QueryDatabaseParameters['sorts']
 }): Promise<PageObjectResponse[]> {
@@ -212,7 +228,7 @@ async function queryAllPages(params: {
 
   do {
     const response = await notion.databases.query({
-      database_id: DATABASE_ID,
+      database_id: databaseId,
       filter: params.filter,
       sorts: params.sorts,
       start_cursor: cursor,
@@ -236,8 +252,9 @@ async function queryAllPages(params: {
 // ─────────────────────────────────────────────
 
 /** published=true 포스트 목록 (최신순) */
-async function getPostsImpl(): Promise<Post[]> {
-  const schema = await getDatabaseSchema()
+async function getPostsImpl(databaseId: string): Promise<Post[]> {
+  const schema = await getDatabaseSchema(databaseId)
+  const source = getPostSource(databaseId)
   const filter = schema.published
     ? { property: schema.published, checkbox: { equals: true } }
     : undefined
@@ -245,70 +262,61 @@ async function getPostsImpl(): Promise<Post[]> {
     ? [{ property: schema.date, direction: 'descending' as const }]
     : [{ timestamp: 'created_time' as const, direction: 'descending' as const }]
 
-  const pages = await queryAllPages({ filter, sorts })
+  const pages = await queryAllPages(databaseId, { filter, sorts })
 
-  return pages.map((page) => pageToPost(page, schema))
+  return pages.map((page) => pageToPost(page, schema, source))
 }
 
-const getPostsCached = unstable_cache(getPostsImpl, [`notion-posts:${DATABASE_ID}`], {
-  revalidate: CACHE_TTL_SECONDS,
-  tags: [NOTION_CACHE_TAGS.posts],
-})
+async function getPostsCached(databaseId: string): Promise<Post[]> {
+  return unstable_cache(
+    async () => getPostsImpl(databaseId),
+    [`notion-posts:${databaseId}`],
+    {
+      revalidate: CACHE_TTL_SECONDS,
+      tags: [NOTION_CACHE_TAGS.posts],
+    }
+  )()
+}
 
 export const getPosts = cache(async (): Promise<Post[]> => {
-  return getPostsCached()
+  return getPostsCached(BLOG_DATABASE_ID)
 })
 
-/** slug로 단일 포스트 조회 */
-async function getPostBySlugImpl(slug: string): Promise<Post | null> {
-  const schema = await getDatabaseSchema()
-  const decodedSlug = normalizeSlug(slug)
+export const getPortfolioPosts = cache(async (): Promise<Post[]> => {
+  return getPostsCached(PORTFOLIO_DATABASE_ID)
+})
 
-  if (schema.slug) {
-    const filter: QueryDatabaseParameters['filter'] = schema.published
-      ? {
-          and: [
-            { property: schema.slug, rich_text: { equals: decodedSlug } },
-            { property: schema.published, checkbox: { equals: true } },
-          ],
-        }
-      : { property: schema.slug, rich_text: { equals: decodedSlug } }
-
-    const response = await notion.databases.query({
-      database_id: DATABASE_ID,
-      filter,
-      page_size: 1,
-    })
-
-    const page = response.results.find(
-      (p): p is PageObjectResponse => 'properties' in p
-    )
-    if (page) return pageToPost(page, schema)
-  }
-
-  const posts = await getPosts()
-  const matched = posts.find(
-    (post) => post.slug === decodedSlug || post.slug === slug
+export const getAllContentPosts = cache(async (): Promise<Post[]> => {
+  const postGroups = await Promise.all(
+    CONTENT_DATABASE_IDS.map((databaseId) => getPostsCached(databaseId))
   )
-  return matched ?? null
+
+  return postGroups
+    .flat()
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+})
+
+async function getPostBySlugFromDatabase(
+  databaseId: string,
+  slug: string
+): Promise<Post | null> {
+  const decodedSlug = normalizeSlug(slug)
+  const posts = await getPostsCached(databaseId)
+  return posts.find((post) => post.slug === decodedSlug || post.slug === slug) ?? null
 }
 
-const getPostBySlugCached = unstable_cache(
-  getPostBySlugImpl,
-  [`notion-post-by-slug:${DATABASE_ID}`],
-  {
-    revalidate: CACHE_TTL_SECONDS,
-    tags: [NOTION_CACHE_TAGS.posts],
-  }
-)
-
 export const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
-  return getPostBySlugCached(slug)
+  for (const databaseId of CONTENT_DATABASE_IDS) {
+    const post = await getPostBySlugFromDatabase(databaseId, slug)
+    if (post) return post
+  }
+
+  return null
 })
 
 /** 특정 태그의 포스트 목록 */
 async function getPostsByTagImpl(tag: string): Promise<Post[]> {
-  const schema = await getDatabaseSchema()
+  const schema = await getDatabaseSchema(BLOG_DATABASE_ID)
   if (!schema.tags) return []
 
   const filter: QueryDatabaseParameters['filter'] = schema.published
@@ -324,17 +332,17 @@ async function getPostsByTagImpl(tag: string): Promise<Post[]> {
     ? [{ property: schema.date, direction: 'descending' as const }]
     : [{ timestamp: 'created_time' as const, direction: 'descending' as const }]
 
-  const pages = await queryAllPages({
+  const pages = await queryAllPages(BLOG_DATABASE_ID, {
     filter,
     sorts,
   })
 
-  return pages.map((page) => pageToPost(page, schema))
+  return pages.map((page) => pageToPost(page, schema, 'blog'))
 }
 
 const getPostsByTagCached = unstable_cache(
   getPostsByTagImpl,
-  [`notion-posts-by-tag:${DATABASE_ID}`],
+  [`notion-posts-by-tag:${BLOG_DATABASE_ID}`],
   {
     revalidate: CACHE_TTL_SECONDS,
     tags: [NOTION_CACHE_TAGS.posts],
@@ -394,7 +402,7 @@ async function getPageBlocksImpl(blockId: string): Promise<Block[]> {
 
 const getPageBlocksCached = unstable_cache(
   getPageBlocksImpl,
-  [`notion-page-blocks:${DATABASE_ID}`],
+  ['notion-page-blocks'],
   {
     revalidate: CACHE_TTL_SECONDS,
     tags: [NOTION_CACHE_TAGS.blocks],
@@ -407,7 +415,7 @@ export const getPageBlocks = cache(async (blockId: string): Promise<Block[]> => 
 
 /** generateStaticParams용 — 모든 published 슬러그 반환 */
 export async function getAllSlugs(): Promise<string[]> {
-  const posts = await getPosts()
+  const posts = await getAllContentPosts()
   return posts
     .map((p) => p.slug)
     .filter(Boolean)
@@ -496,10 +504,10 @@ export async function getPostByPageId(postId: string): Promise<Post | null> {
 
   const parent =
     page.parent?.type === 'database_id' ? page.parent.database_id ?? null : null
-  if (parent && parent !== DATABASE_ID) {
+  if (!parent || !CONTENT_DATABASE_IDS.includes(parent)) {
     return null
   }
 
-  const schema = await getDatabaseSchema()
-  return pageToPost(page, schema)
+  const schema = await getDatabaseSchema(parent)
+  return pageToPost(page, schema, getPostSource(parent))
 }

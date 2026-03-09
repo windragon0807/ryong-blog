@@ -1,7 +1,7 @@
 import { cache } from 'react'
 import { unstable_cache } from 'next/cache'
 import type { Block, KnownBlock, Post, RichText } from '@/types/notion'
-import { getPageBlocks, getPosts, NOTION_CACHE_TAGS } from './notion'
+import { getAllContentPosts, getPageBlocks, NOTION_CACHE_TAGS } from './notion'
 
 const CONTENT_CACHE_TTL_SECONDS = process.env.NODE_ENV === 'development' ? 90 : 3600
 const READING_WORDS_PER_MINUTE = 300
@@ -144,7 +144,7 @@ export const getPostReadingStats = cache(async (postId: string): Promise<Reading
 })
 
 async function getSearchDocumentsImpl(): Promise<SearchDocument[]> {
-  const posts = await getPosts()
+  const posts = await getAllContentPosts()
   const documents = await Promise.all(
     posts.map(async (post) => {
       const blocks = await getPageBlocks(post.id)
@@ -179,7 +179,7 @@ export const getSearchDocuments = cache(async (): Promise<SearchDocument[]> => {
 })
 
 export async function getRelatedPosts(currentPost: Post, limit = 3): Promise<Post[]> {
-  const posts = await getPosts()
+  const posts = await getAllContentPosts()
 
   return posts
     .filter((post) => post.id !== currentPost.id)

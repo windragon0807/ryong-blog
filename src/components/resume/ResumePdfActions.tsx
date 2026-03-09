@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useCallback, useState } from 'react'
 import { buildResumeAsA4Pdf } from '@/lib/resume-a4-download'
 
@@ -8,19 +9,6 @@ function DownloadIcon({ className = '' }: { className?: string }) {
     <svg aria-hidden viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
       <path
         d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function PrintIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg aria-hidden viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
-      <path
-        d="M7 8V4h10v4M7 14H5a2 2 0 0 1-2-2v-2a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v2a2 2 0 0 1-2 2h-2m-10 0h10v6H7z"
         strokeWidth="1.8"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -39,6 +27,19 @@ function SpinnerIcon({ className = '' }: { className?: string }) {
         strokeWidth="2"
         strokeLinecap="round"
         className="animate-spin origin-center"
+      />
+    </svg>
+  )
+}
+
+function ArrowRightIcon({ className = '' }: { className?: string }) {
+  return (
+    <svg aria-hidden viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
+      <path
+        d="M5 12h12m0 0-4-4m4 4-4 4"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   )
@@ -118,55 +119,31 @@ export function ResumePdfActions({ pdfUrl }: { pdfUrl: string }) {
     }
   }, [isConverting, pdfUrl])
 
-  const handlePrint = useCallback(() => {
-    const iframe = document.createElement('iframe')
-    iframe.style.position = 'fixed'
-    iframe.style.right = '0'
-    iframe.style.bottom = '0'
-    iframe.style.width = '0'
-    iframe.style.height = '0'
-    iframe.style.border = '0'
-    iframe.src = pdfUrl
-
-    iframe.onload = () => {
-      try {
-        iframe.contentWindow?.focus()
-        iframe.contentWindow?.print()
-      } catch {
-        window.open(pdfUrl, '_blank', 'noopener,noreferrer')
-      } finally {
-        window.setTimeout(() => iframe.remove(), 1500)
-      }
-    }
-
-    document.body.appendChild(iframe)
-  }, [pdfUrl])
-
   return (
-    <div className="flex items-center justify-end gap-2">
-      <button
-        type="button"
-        onClick={handleDownload}
-        disabled={isConverting}
-        className={`${actionButtonClassName} ${isConverting ? 'cursor-wait opacity-80' : ''}`}
-        aria-busy={isConverting}
-      >
-        {isConverting ? (
-          <SpinnerIcon className="h-4 w-4" />
-        ) : (
-          <DownloadIcon className="h-4 w-4" />
-        )}
-        {isConverting ? '변환 중...' : '다운로드'}
-      </button>
-      <button
-        type="button"
-        onClick={handlePrint}
-        disabled={isConverting}
-        className={`${actionButtonClassName} ${isConverting ? 'cursor-not-allowed opacity-70' : ''}`}
-      >
-        <PrintIcon className="h-4 w-4" />
-        인쇄
-      </button>
+    <div className="flex justify-end">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={isConverting}
+          className={`${actionButtonClassName} ${isConverting ? 'cursor-wait opacity-80' : ''}`}
+          aria-busy={isConverting}
+        >
+          {isConverting ? (
+            <SpinnerIcon className="h-4 w-4" />
+          ) : (
+            <DownloadIcon className="h-4 w-4" />
+          )}
+          {isConverting ? '변환 중...' : '다운로드'}
+        </button>
+        <Link
+          href="/portfolio"
+          className="inline-flex items-center gap-2 rounded-lg border border-zinc-200/90 bg-zinc-50/85 px-3 py-2 text-sm font-medium text-zinc-600 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-white hover:text-zinc-900 dark:border-zinc-700/80 dark:bg-zinc-900/85 dark:text-zinc-300 dark:hover:border-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        >
+          포트폴리오 보기
+          <ArrowRightIcon className="h-4 w-4" />
+        </Link>
+      </div>
     </div>
   )
 }

@@ -23,7 +23,12 @@ interface PostSearchProviderProps {
 }
 
 function isExplorerRoute(pathname: string): boolean {
-  return pathname === '/' || pathname.startsWith('/tags/') || pathname.startsWith('/series/')
+  return (
+    pathname === '/' ||
+    pathname === '/portfolio' ||
+    pathname.startsWith('/tags/') ||
+    pathname.startsWith('/series/')
+  )
 }
 
 export function PostSearchProvider({ children }: PostSearchProviderProps) {

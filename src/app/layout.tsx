@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from 'next-themes'
 import { Header } from '@/components/Header'
+import { HeaderBrandScopeProvider } from '@/components/HeaderBrandScopeProvider'
 import { PostSearchProvider } from '@/components/PostSearchProvider'
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
@@ -162,12 +163,14 @@ export default function RootLayout({
           {fontThemeBootScript}
         </Script>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <PostSearchProvider>
-            <SmoothScrollProvider />
-            <Header />
-            <main className="max-w-3xl mx-auto px-4 pt-8 pb-16">{children}</main>
-            <ScrollToTopButton />
-          </PostSearchProvider>
+          <HeaderBrandScopeProvider>
+            <PostSearchProvider>
+              <SmoothScrollProvider />
+              <Header />
+              <main className="max-w-3xl mx-auto px-4 pt-8 pb-16">{children}</main>
+              <ScrollToTopButton />
+            </PostSearchProvider>
+          </HeaderBrandScopeProvider>
         </ThemeProvider>
         <Analytics />
         <SpeedInsights />

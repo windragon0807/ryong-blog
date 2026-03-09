@@ -1,5 +1,9 @@
 import { NextRequest } from 'next/server'
-import { getPostImageBlockUrlById, getPostMediaUrlsById, getPosts } from '@/lib/notion'
+import {
+  getAllContentPosts,
+  getPostImageBlockUrlById,
+  getPostMediaUrlsById,
+} from '@/lib/notion'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -36,7 +40,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const posts = await getPosts()
+    const posts = await getAllContentPosts()
     const isPublishedPost = posts.some((post) => post.id === postId)
     if (!isPublishedPost) {
       return Response.json({ ok: false, message: 'Post not found' }, { status: 404 })

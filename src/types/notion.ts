@@ -1,3 +1,5 @@
+export type PostSource = 'blog' | 'portfolio'
+
 export interface Post {
   id: string
   title: string
@@ -9,6 +11,7 @@ export interface Post {
   date: string
   icon: PostIcon | null
   cover: string | null
+  source: PostSource
 }
 
 export type PostIcon =

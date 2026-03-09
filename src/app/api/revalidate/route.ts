@@ -54,7 +54,9 @@ export async function POST(request: NextRequest) {
   revalidateTag(NOTION_CACHE_TAGS.blocks, 'max')
 
   revalidatePath('/')
+  revalidatePath('/portfolio')
   revalidatePath('/sitemap.xml')
+  revalidatePath('/api/search-index')
 
   if (payload.slug) {
     revalidatePath(`/posts/${payload.slug}`)
@@ -88,6 +90,8 @@ export async function GET(request: NextRequest) {
   revalidateTag(NOTION_CACHE_TAGS.posts, 'max')
   revalidateTag(NOTION_CACHE_TAGS.blocks, 'max')
   revalidatePath('/')
+  revalidatePath('/portfolio')
+  revalidatePath('/api/search-index')
 
   return Response.json({ ok: true, message: 'Revalidated homepage and post caches' })
 }

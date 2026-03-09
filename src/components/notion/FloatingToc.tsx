@@ -14,7 +14,7 @@ export function FloatingToc({ headings }: Props) {
   const [indicatorHeight, setIndicatorHeight] = useState(20)
   const isManualScrollingRef = useRef(false)
   const manualScrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const listRef = useRef<HTMLUListElement | null>(null)
+  const navRef = useRef<HTMLElement | null>(null)
   const trackRef = useRef<HTMLDivElement | null>(null)
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({})
 
@@ -33,6 +33,36 @@ export function FloatingToc({ headings }: Props) {
     setIndicatorHeight(nextHeight)
   }, [])
 
+  const scrollActiveItemIntoView = useCallback(
+    (targetId: string, behavior: ScrollBehavior = 'auto') => {
+      const navElement = navRef.current
+      const activeElement = itemRefs.current[targetId]
+      if (!navElement || !activeElement) return
+
+      const padding = 16
+      const currentScrollTop = navElement.scrollTop
+      const activeTop = activeElement.offsetTop
+      const activeBottom = activeTop + activeElement.offsetHeight
+      const visibleTop = currentScrollTop + padding
+      const visibleBottom = currentScrollTop + navElement.clientHeight - padding
+
+      if (activeTop >= visibleTop && activeBottom <= visibleBottom) {
+        return
+      }
+
+      const centeredScrollTop =
+        activeTop - navElement.clientHeight / 2 + activeElement.offsetHeight / 2
+      const maxScrollTop = Math.max(0, navElement.scrollHeight - navElement.clientHeight)
+      const nextScrollTop = Math.min(Math.max(0, centeredScrollTop), maxScrollTop)
+
+      navElement.scrollTo({
+        top: nextScrollTop,
+        behavior,
+      })
+    },
+    []
+  )
+
   const visibleHeadings = useMemo(
     () => headings.filter((heading) => heading.text.trim().length > 0),
     [headings]
@@ -47,6 +77,10 @@ export function FloatingToc({ headings }: Props) {
   useEffect(() => {
     updateIndicator(currentActiveId)
   }, [currentActiveId, updateIndicator, visibleHeadings])
+
+  useEffect(() => {
+    scrollActiveItemIntoView(currentActiveId)
+  }, [currentActiveId, scrollActiveItemIntoView])
 
   useEffect(() => {
     const handleResize = () => {
@@ -120,11 +154,15 @@ export function FloatingToc({ headings }: Props) {
     }
     history.replaceState(null, '', `#${targetId}`)
     setActiveId(targetId)
+    scrollActiveItemIntoView(targetId, 'smooth')
   }
 
   return (
     <aside className="fixed top-24 right-[max(1rem,calc((100vw-48rem)/2-17rem))] z-40 hidden w-60 xl:block">
-      <nav className="max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-zinc-200 pl-4 dark:border-zinc-700">
+      <nav
+        ref={navRef}
+        className="max-h-[calc(100vh-8rem)] overflow-y-auto border-l border-zinc-200 pl-4 dark:border-zinc-700"
+      >
         <div ref={trackRef} className="floating-toc-track relative">
           <span
             aria-hidden
@@ -136,7 +174,7 @@ export function FloatingToc({ headings }: Props) {
               opacity: indicatorHeight > 0 ? 1 : 0,
             }}
           />
-          <ul ref={listRef} className="space-y-0.5">
+          <ul className="space-y-0.5">
           {visibleHeadings.map((heading) => {
             const isActive = currentActiveId === heading.id
             const indent =
