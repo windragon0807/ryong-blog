@@ -106,7 +106,7 @@ export function Header() {
   )
 
   return (
-    <header className="glass-surface header-sticky top-0 z-50 w-full border-b border-zinc-200/80 dark:border-zinc-700/70">
+    <header className="glass-surface header-sticky top-0 z-50 w-full">
       {isResumeLayout ? (
         <div className="mx-auto w-full max-w-[1280px] px-3 sm:px-6">
           <div className="mx-auto w-full max-w-[1120px]">{headerInner}</div>
