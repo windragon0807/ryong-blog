@@ -47,7 +47,7 @@ export function LogoMotionSelect({ className = '' }: LogoMotionSelectProps) {
         >
           <SelectValue placeholder="로고 애니메이션을 선택하세요" />
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent position="popper" data-settings-menu-portal="">
           {LOGO_MOTION_OPTIONS.map((motion) => (
             <SelectItem key={motion.value} value={motion.value}>
               <span className="flex flex-col">

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useEffectEvent, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useAnimatedPresence } from '@/hooks/useAnimatedPresence'
 import { IconControlButton } from './IconControlButton'
@@ -39,13 +39,7 @@ function CloseIcon({ className = '' }: { className?: string }) {
   )
 }
 
-function ShortcutHint({
-  keyText,
-  label,
-}: {
-  keyText: string
-  label: string
-}) {
+function ShortcutHint({ keyText, label }: { keyText: string; label: string }) {
   return (
     <div className="hidden items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-1 text-[11px] text-zinc-500 dark:border-zinc-700 dark:bg-zinc-800/70 dark:text-zinc-400 md:inline-flex">
       <kbd className="rounded border border-zinc-200 bg-white px-1.5 py-0.5 font-mono text-[10px] text-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
@@ -57,57 +51,63 @@ function ShortcutHint({
 }
 
 export function HeaderSearchOverlay() {
-  const { query, setQuery, isOpen, setIsOpen, resultCount, resultPosts, enabled } =
-    usePostSearch()
+  const { query, setQuery, resultCount, resultPosts, enabled } = usePostSearch()
   const normalizedQuery = query.trim()
   const hasQuery = normalizedQuery.length > 0
   const hasResults = resultPosts.length > 0
   const resultTotal = hasQuery ? (resultCount ?? resultPosts.length) : resultPosts.length
   const inputRef = useRef<HTMLInputElement | null>(null)
+  const [isOpen, setIsOpen] = useState(false)
   const closeOverlay = useCallback(() => setIsOpen(false), [setIsOpen])
   const { isMounted, state } = useAnimatedPresence(isOpen, {
     enterDelayMs: 16,
-    exitDurationMs: 180,
+    exitDurationMs: 260,
+  })
+
+  const handleGlobalKeyDown = useEffectEvent((event: KeyboardEvent) => {
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault()
+      setIsOpen(true)
+    }
+
+    if (!isOpen && event.key === '/') {
+      const target = event.target as HTMLElement | null
+      const isTypingElement =
+        target?.tagName === 'INPUT' ||
+        target?.tagName === 'TEXTAREA' ||
+        target?.isContentEditable
+      if (!isTypingElement) {
+        event.preventDefault()
+        setIsOpen(true)
+      }
+    }
+
+    if (event.key === 'Escape') {
+      closeOverlay()
+    }
   })
 
   useEffect(() => {
     if (!enabled) return
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-        event.preventDefault()
-        setIsOpen(true)
-      }
-
-      if (!isOpen && event.key === '/') {
-        const target = event.target as HTMLElement | null
-        const isTypingElement =
-          target?.tagName === 'INPUT' ||
-          target?.tagName === 'TEXTAREA' ||
-          target?.isContentEditable
-        if (!isTypingElement) {
-          event.preventDefault()
-          setIsOpen(true)
-        }
-      }
-
-      if (event.key === 'Escape') {
-        closeOverlay()
-      }
-    }
+    const handleKeyDown = (event: KeyboardEvent) => handleGlobalKeyDown(event)
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [closeOverlay, enabled, isOpen, setIsOpen])
+  }, [enabled])
 
   useEffect(() => {
     if (!isOpen) return
-    const timer = window.setTimeout(() => inputRef.current?.focus(), 40)
+    const prefersCoarsePointer = window.matchMedia('(pointer: coarse)').matches
+    const focusDelayMs = prefersCoarsePointer ? 180 : 40
+    const timer = window.setTimeout(() => {
+      inputRef.current?.focus({ preventScroll: true })
+    }, focusDelayMs)
     return () => window.clearTimeout(timer)
   }, [isOpen])
 
   useEffect(() => {
-    if (isOpen) {
+    if (isMounted) {
       document.body.style.overflow = 'hidden'
       return () => {
         document.body.style.overflow = ''
@@ -116,7 +116,7 @@ export function HeaderSearchOverlay() {
 
     document.body.style.overflow = ''
     return undefined
-  }, [isOpen])
+  }, [isMounted])
 
   if (!enabled) return null
 
@@ -126,19 +126,13 @@ export function HeaderSearchOverlay() {
         type="button"
         aria-label="검색 닫기"
         onClick={closeOverlay}
-        className={`absolute inset-0 bg-zinc-950/52 backdrop-blur-[1.5px] ${
-          state === 'exiting'
-            ? 'opacity-0 transition-opacity duration-180 ease-out'
-            : 'search-overlay-backdrop-enter opacity-100'
-        }`}
+        data-state={state}
+        className="search-overlay-backdrop absolute inset-0 bg-zinc-950/52"
       />
 
       <div
-        className={`relative mx-auto w-[min(1120px,calc(100vw-1.5rem))] overflow-hidden rounded-[24px] border border-zinc-200/90 bg-white/96 p-4 shadow-[0_34px_80px_-32px_rgba(16,24,40,0.72)] backdrop-blur-xl will-change-[transform,opacity] dark:border-zinc-700/80 dark:bg-zinc-900/94 dark:shadow-[0_34px_85px_-28px_rgba(2,6,23,0.82)] ${
-          state === 'exiting'
-            ? 'translate-y-3 opacity-0 transition-[opacity,transform] duration-180 ease-out'
-            : 'search-overlay-panel-enter glass-surface translate-y-0 opacity-100'
-        }`}
+        data-state={state}
+        className="search-overlay-panel glass-surface relative mx-auto w-[min(1120px,calc(100vw-1.5rem))] overflow-hidden rounded-[24px] border border-zinc-200/90 bg-white/96 p-4 shadow-[0_34px_80px_-32px_rgba(16,24,40,0.72)] backdrop-blur-md will-change-[transform,opacity] dark:border-zinc-700/80 dark:bg-zinc-900/94 dark:shadow-[0_34px_85px_-28px_rgba(2,6,23,0.82)] sm:backdrop-blur-xl"
       >
         <div
           aria-hidden
@@ -155,7 +149,6 @@ export function HeaderSearchOverlay() {
             </p>
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <ShortcutHint keyText="/" label="열기" />
             <ShortcutHint keyText="Esc" label="닫기" />
             <button
               type="button"

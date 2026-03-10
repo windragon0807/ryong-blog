@@ -7,8 +7,6 @@ import type { Post } from '@/types/notion'
 interface PostSearchContextValue {
   query: string
   setQuery: (value: string) => void
-  isOpen: boolean
-  setIsOpen: (value: boolean) => void
   resultCount: number | null
   setResultCount: (value: number | null) => void
   resultPosts: Post[]
@@ -35,7 +33,6 @@ export function PostSearchProvider({ children }: PostSearchProviderProps) {
   const pathname = usePathname()
   const enabled = isExplorerRoute(pathname)
   const [query, setQuery] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
   const [resultCount, setResultCount] = useState<number | null>(null)
   const [resultPosts, setResultPosts] = useState<Post[]>([])
 
@@ -43,15 +40,13 @@ export function PostSearchProvider({ children }: PostSearchProviderProps) {
     () => ({
       query: enabled ? query : '',
       setQuery,
-      isOpen: enabled ? isOpen : false,
-      setIsOpen,
       resultCount: enabled ? resultCount : null,
       setResultCount,
       resultPosts: enabled ? resultPosts : [],
       setResultPosts,
       enabled,
     }),
-    [enabled, isOpen, query, resultCount, resultPosts]
+    [enabled, query, resultCount, resultPosts]
   )
 
   return <PostSearchContext.Provider value={value}>{children}</PostSearchContext.Provider>

@@ -1,6 +1,6 @@
 export default function PostLoading() {
   return (
-    <article>
+    <article className="px-1 sm:px-0">
       <header className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-700">
         <div className="mb-5 h-56 w-full animate-pulse rounded-2xl border border-zinc-200 bg-zinc-100/60 dark:border-zinc-700 dark:bg-zinc-800/60" />
         <div className="mb-3 h-4 w-36 animate-pulse rounded bg-zinc-200/80 dark:bg-zinc-700/80" />

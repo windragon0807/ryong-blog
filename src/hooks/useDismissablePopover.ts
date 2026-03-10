@@ -5,15 +5,33 @@ import { useEffect, type Dispatch, type RefObject, type SetStateAction } from 'r
 export function useDismissablePopover(
   open: boolean,
   wrapperRef: RefObject<HTMLElement | null>,
-  setOpen: Dispatch<SetStateAction<boolean>>
+  setOpen: Dispatch<SetStateAction<boolean>>,
+  interactiveSelectors: string[] = []
 ) {
   useEffect(() => {
     if (!open) return
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!wrapperRef.current?.contains(event.target as Node)) {
-        setOpen(false)
+      if (wrapperRef.current?.contains(event.target as Node)) {
+        return
       }
+
+      if (interactiveSelectors.length > 0) {
+        const path = event.composedPath()
+        const clickedInsideInteractiveLayer = path.some((node) => {
+          if (!(node instanceof Element)) {
+            return false
+          }
+
+          return interactiveSelectors.some((selector) => node.matches(selector))
+        })
+
+        if (clickedInsideInteractiveLayer) {
+          return
+        }
+      }
+
+      setOpen(false)
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -29,5 +47,5 @@ export function useDismissablePopover(
       document.removeEventListener('pointerdown', handlePointerDown)
       document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [open, setOpen, wrapperRef])
+  }, [interactiveSelectors, open, setOpen, wrapperRef])
 }

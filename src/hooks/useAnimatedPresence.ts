@@ -20,52 +20,69 @@ export function useAnimatedPresence(
   const [state, setState] = useState<PresenceState>(open ? 'entered' : 'exited')
 
   useEffect(() => {
-    let mountTimer: ReturnType<typeof setTimeout> | null = null
     let enterTimer: ReturnType<typeof setTimeout> | null = null
-    let exitStartTimer: ReturnType<typeof setTimeout> | null = null
     let exitEndTimer: ReturnType<typeof setTimeout> | null = null
+    let enterFrameOne: number | null = null
+    let enterFrameTwo: number | null = null
+    let exitFrame: number | null = null
 
     if (open) {
-      mountTimer = setTimeout(() => {
+      enterFrameOne = window.requestAnimationFrame(() => {
         setIsMounted(true)
-        setState(prefersReducedMotion ? 'entered' : 'entering')
-      }, 0)
 
-      if (!prefersReducedMotion) {
-        enterTimer = setTimeout(() => {
+        if (prefersReducedMotion) {
           setState('entered')
-        }, enterDelayMs)
-      }
+          return
+        }
+
+        setState('entering')
+
+        const completeEnter = () => {
+          setState('entered')
+        }
+
+        // Safari can coalesce zero-delay timers into the same paint, skipping the transition.
+        // Double-rAF ensures the entering frame is committed before moving to entered.
+        enterFrameTwo = window.requestAnimationFrame(() => {
+          if (enterDelayMs > 0) {
+            enterTimer = window.setTimeout(completeEnter, enterDelayMs)
+            return
+          }
+
+          completeEnter()
+        })
+      })
 
       return () => {
-        if (mountTimer) clearTimeout(mountTimer)
         if (enterTimer) clearTimeout(enterTimer)
+        if (enterFrameOne !== null) cancelAnimationFrame(enterFrameOne)
+        if (enterFrameTwo !== null) cancelAnimationFrame(enterFrameTwo)
       }
     }
 
     if (!isMounted) return
 
     if (prefersReducedMotion) {
-      exitEndTimer = setTimeout(() => {
+      exitFrame = window.requestAnimationFrame(() => {
         setState('exited')
         setIsMounted(false)
-      }, 0)
+      })
 
       return () => {
-        if (exitEndTimer) clearTimeout(exitEndTimer)
+        if (exitFrame !== null) cancelAnimationFrame(exitFrame)
       }
     }
 
-    exitStartTimer = setTimeout(() => {
+    exitFrame = window.requestAnimationFrame(() => {
       setState('exiting')
-    }, 0)
-    exitEndTimer = setTimeout(() => {
-      setState('exited')
-      setIsMounted(false)
-    }, exitDurationMs)
+      exitEndTimer = window.setTimeout(() => {
+        setState('exited')
+        setIsMounted(false)
+      }, exitDurationMs)
+    })
 
     return () => {
-      if (exitStartTimer) clearTimeout(exitStartTimer)
+      if (exitFrame !== null) cancelAnimationFrame(exitFrame)
       if (exitEndTimer) clearTimeout(exitEndTimer)
     }
   }, [enterDelayMs, exitDurationMs, isMounted, open, prefersReducedMotion])

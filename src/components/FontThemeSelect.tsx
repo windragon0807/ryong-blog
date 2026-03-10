@@ -45,7 +45,7 @@ export function FontThemeSelect({ className = '' }: FontThemeSelectProps) {
         <SelectTrigger aria-label="폰트 선택" className={cn('h-10 w-full text-sm', className)}>
           <SelectValue placeholder="폰트를 선택하세요" />
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent position="popper" data-settings-menu-portal="">
           {FONT_THEME_OPTIONS.map((theme) => (
             <SelectItem key={theme.value} value={theme.value}>
               {theme.label}

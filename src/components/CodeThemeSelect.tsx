@@ -52,7 +52,7 @@ export function CodeThemeSelect({ className = '' }: CodeThemeSelectProps) {
         >
           <SelectValue placeholder="코드 테마를 선택하세요" />
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent position="popper" data-settings-menu-portal="">
           {CODE_THEME_OPTIONS.map((theme) => (
             <SelectItem key={theme.value} value={theme.value}>
               {theme.label}

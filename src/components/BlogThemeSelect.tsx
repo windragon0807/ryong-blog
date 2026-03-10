@@ -53,7 +53,7 @@ export function BlogThemeSelect({ className = '' }: BlogThemeSelectProps) {
         <SelectTrigger aria-label="블로그 테마 선택" className={cn('h-10 w-full text-sm', className)}>
           <SelectValue placeholder="테마 색상을 선택하세요" />
         </SelectTrigger>
-        <SelectContent position="popper">
+        <SelectContent position="popper" data-settings-menu-portal="">
           {BLOG_THEME_OPTIONS.map((theme) => (
             <SelectItem key={theme.value} value={theme.value}>
               <span className="flex items-center gap-2.5">

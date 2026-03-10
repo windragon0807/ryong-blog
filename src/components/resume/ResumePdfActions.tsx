@@ -120,7 +120,7 @@ export function ResumePdfActions({ pdfUrl }: { pdfUrl: string }) {
   }, [isConverting, pdfUrl])
 
   return (
-    <div className="flex justify-end">
+    <div className="-mt-1 flex justify-end sm:mt-0">
       <div className="flex flex-wrap items-center justify-end gap-2">
         <button
           type="button"

@@ -95,7 +95,7 @@ const knownBlockRenderers = {
     const caption = block.image.caption
     return (
       <figure className="my-6">
-        <div className="relative w-full overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100/70 dark:border-zinc-600 dark:bg-zinc-800/55">
+        <div className="relative w-full overflow-hidden rounded-xl">
           <LightboxImage
             src={src}
             alt={caption.map((token) => token.plain_text).join('') || '이미지'}
@@ -123,15 +123,10 @@ const knownBlockRenderers = {
     <blockquote className="relative my-5 overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50/80 px-5 py-4 pl-6 dark:border-zinc-700 dark:bg-zinc-800/35">
       <span
         aria-hidden
-        className="absolute top-0 left-0 h-full w-1.5 rounded-r-full bg-gradient-to-b from-blue-500 to-cyan-400"
-      />
-      <span
-        aria-hidden
-        className="pointer-events-none absolute top-2 right-3 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/75 text-[1.35rem] font-serif leading-none text-zinc-300/85 shadow-sm dark:bg-zinc-900/45 dark:text-zinc-500/75"
+        className="themed-quote-rail absolute top-0 left-0 h-full w-1.5 rounded-r-full"
       >
-        “
       </span>
-      <p className="relative pr-8 text-[1.03rem] leading-8 text-zinc-700 dark:text-zinc-200">
+      <p className="relative text-[1.03rem] leading-8 text-zinc-700 dark:text-zinc-200">
         <RichTextRenderer richText={block.quote.rich_text} />
       </p>
     </blockquote>

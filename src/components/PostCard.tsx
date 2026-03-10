@@ -64,10 +64,10 @@ export function PostCard({
         />
         <div className={isList ? 'sm:flex sm:min-h-[13rem]' : ''}>
           <div
-            className={`relative z-10 overflow-hidden border-white/65 dark:border-zinc-700/60 ${
+            className={`relative z-10 overflow-hidden ${
               isList
-                ? 'aspect-[16/9] border-b sm:h-auto sm:w-[42%] sm:border-r sm:border-b-0'
-                : 'aspect-[16/9] border-b'
+                ? 'aspect-[16/9] sm:h-auto sm:w-[42%]'
+                : 'aspect-[16/9]'
             }`}
             style={
               hasCover
@@ -99,14 +99,14 @@ export function PostCard({
               <div
                 className={`absolute inset-0 bg-gradient-to-t transition-opacity duration-500 ${
                   isCompact
-                    ? 'from-black/24 via-black/4 to-transparent opacity-75 group-hover:opacity-85'
-                    : 'from-black/35 via-black/5 to-transparent group-hover:opacity-90'
+                    ? 'from-black/12 via-black/[0.03] to-transparent opacity-58 group-hover:opacity-68'
+                    : 'from-black/16 via-black/[0.03] to-transparent opacity-62 group-hover:opacity-72'
                 }`}
               />
             )}
             {hasCover && !isCompact && (
               <div
-                className="absolute inset-0 opacity-65 mix-blend-soft-light transition-transform duration-500 ease-out group-hover:scale-[1.02]"
+                className="absolute inset-0 opacity-42 mix-blend-soft-light transition-transform duration-500 ease-out group-hover:scale-[1.02]"
                 style={{
                   background: `radial-gradient(circle at 75% 82%, ${accent.soft} 0%, transparent 62%)`,
                 }}

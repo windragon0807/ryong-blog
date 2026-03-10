@@ -10,6 +10,9 @@ import { FontThemeSelect } from './FontThemeSelect'
 import { IconControlButton } from './IconControlButton'
 import { LogoMotionSelect } from './LogoMotionSelect'
 
+const SETTINGS_PORTAL_SELECTOR = '[data-settings-menu-portal]'
+const SETTINGS_PORTAL_SELECTORS = [SETTINGS_PORTAL_SELECTOR]
+
 export function ThemeSettingsMenu() {
   const [open, setOpen] = useState(false)
   const { isMounted, state } = useAnimatedPresence(open, {
@@ -19,7 +22,7 @@ export function ThemeSettingsMenu() {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const panelId = useId()
 
-  useDismissablePopover(open, wrapperRef, setOpen)
+  useDismissablePopover(open, wrapperRef, setOpen, SETTINGS_PORTAL_SELECTORS)
 
   return (
     <div ref={wrapperRef} className="relative">

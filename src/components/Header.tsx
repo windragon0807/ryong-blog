@@ -62,7 +62,7 @@ export function Header() {
 
   const headerInner = (
     <div className="flex min-h-14 items-center justify-between gap-3 py-2 sm:gap-4 sm:py-0">
-      <div className="min-w-0">
+      <div className="min-w-0 ml-2 sm:ml-0">
         <Link
           href={brandHref}
           className="brand-link relative inline-grid max-w-full truncate font-bold text-lg text-zinc-900 dark:text-zinc-100"

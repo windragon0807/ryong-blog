@@ -5,7 +5,6 @@ import { notFound } from 'next/navigation'
 import { HeaderBrandScopeHydrator } from '@/components/HeaderBrandScopeHydrator'
 import { getPostBySlug, getAllSlugs } from '@/lib/notion'
 import { getRelatedPosts } from '@/lib/postContent'
-import { ReadingProgress } from '@/components/ReadingProgress'
 import { RelatedPosts } from '@/components/RelatedPosts'
 import { RetryableImage } from '@/components/RetryableImage'
 import { GiscusComments } from '@/components/GiscusComments'
@@ -105,16 +104,15 @@ export default async function PostPage({ params }: PageProps) {
       <HeaderBrandScopeHydrator
         scope={post.source === 'portfolio' ? 'portfolio' : 'log'}
       />
-      <ReadingProgress />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
       />
-      <article>
+      <article className="px-1 sm:px-0">
         {/* 헤더 */}
         <header className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-700">
           {post.cover && (
-            <figure className="post-hero-cover mb-5 overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700">
+            <figure className="post-hero-cover mb-5 overflow-hidden rounded-2xl">
               <div className="relative aspect-[1200/630] w-full overflow-hidden">
                 <RetryableImage
                   src={post.cover}

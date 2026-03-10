@@ -57,7 +57,7 @@ export default async function ResumePage() {
 
   return (
     <section className="relative left-1/2 right-1/2 w-screen -translate-x-1/2">
-      <div className="mx-auto w-full max-w-[1280px] px-3 pt-2 pb-5 sm:px-6 sm:pt-4 sm:pb-8">
+      <div className="mx-auto w-full max-w-[1280px] px-3 pt-0 pb-5 sm:px-6 sm:pt-4 sm:pb-8">
         <div className="mx-auto w-full max-w-[1120px]">
           <ResumePdfActions pdfUrl={pdfUrl} />
         </div>
