@@ -56,20 +56,28 @@ export function Header() {
       : scope === 'portfolio'
         ? 'ryong.portfolio'
         : 'ryong.log'
-  const brandCharacterCount = Array.from(brandLabel).length
+  const brandCharacters = Array.from(brandLabel)
   const brandHref = scope === 'portfolio' ? '/portfolio' : '/'
   const maxWidthClassName = isExplorerLayout ? 'max-w-[1200px]' : 'max-w-3xl'
+
   const headerInner = (
     <div className="flex min-h-14 items-center justify-between gap-3 py-2 sm:gap-4 sm:py-0">
       <div className="min-w-0">
         <Link
           href={brandHref}
-          className="brand-link group/brand relative inline-flex max-w-full items-center truncate font-bold text-lg text-zinc-900 dark:text-zinc-100"
-          style={{ '--brand-steps': brandCharacterCount } as CSSProperties}
+          className="brand-link relative inline-grid max-w-full truncate font-bold text-lg text-zinc-900 dark:text-zinc-100"
         >
           <span className="brand-base block">{brandLabel}</span>
-          <span aria-hidden className="brand-typing-layer">
-            {brandLabel}
+          <span aria-hidden className="brand-animated-layer">
+            {brandCharacters.map((character, index) => (
+              <span
+                key={`${brandLabel}-${character}-${index}`}
+                className="brand-animated-char"
+                style={{ '--brand-char-index': index } as CSSProperties}
+              >
+                {character}
+              </span>
+            ))}
           </span>
         </Link>
       </div>

@@ -20,6 +20,7 @@ import {
   FONT_THEME_VALUES,
   getFontThemeStack,
 } from '@/lib/fontThemes'
+import { DEFAULT_LOGO_MOTION, LOGO_MOTION_VALUES } from '@/lib/logoMotions'
 import './globals.css'
 
 const geistSans = Geist({
@@ -109,6 +110,18 @@ const blogThemeBootScript = `(() => {
   }
 })();`
 
+const logoMotionBootScript = `(() => {
+  try {
+    const supportedMotions = ${JSON.stringify(LOGO_MOTION_VALUES)};
+    const defaultMotion = ${JSON.stringify(DEFAULT_LOGO_MOTION)};
+    const stored = localStorage.getItem('logo-motion');
+    const motion = stored && supportedMotions.includes(stored) ? stored : defaultMotion;
+    document.documentElement.setAttribute('data-logo-motion', motion);
+  } catch {
+    document.documentElement.setAttribute('data-logo-motion', ${JSON.stringify(DEFAULT_LOGO_MOTION)});
+  }
+})();`
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
   title: {
@@ -145,7 +158,11 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning>
+    <html
+      lang="ko"
+      suppressHydrationWarning
+      data-logo-motion={DEFAULT_LOGO_MOTION}
+    >
       <head>
         <style id="code-theme-style-map">{CODE_THEME_STYLE_TEXT}</style>
       </head>
@@ -161,6 +178,9 @@ export default function RootLayout({
         </Script>
         <Script id="font-theme-init" strategy="beforeInteractive">
           {fontThemeBootScript}
+        </Script>
+        <Script id="logo-motion-init" strategy="beforeInteractive">
+          {logoMotionBootScript}
         </Script>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <HeaderBrandScopeProvider>
