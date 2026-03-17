@@ -20,8 +20,8 @@ export function useAnimatedPresence(
   const [state, setState] = useState<PresenceState>(open ? 'entered' : 'exited')
 
   useEffect(() => {
-    let enterTimer: ReturnType<typeof setTimeout> | null = null
-    let exitEndTimer: ReturnType<typeof setTimeout> | null = null
+    let enterTimer: number | null = null
+    let exitEndTimer: number | null = null
     let enterFrameOne: number | null = null
     let enterFrameTwo: number | null = null
     let exitFrame: number | null = null

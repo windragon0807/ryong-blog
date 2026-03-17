@@ -146,9 +146,9 @@ export const metadata: Metadata = {
     description: '개발 블로그',
   },
   icons: {
-    icon: [{ url: '/brand/ryonglog-icon.svg', type: 'image/svg+xml' }],
-    shortcut: [{ url: '/brand/ryonglog-icon.svg', type: 'image/svg+xml' }],
-    apple: [{ url: '/brand/ryonglog-icon.svg', type: 'image/svg+xml' }],
+    icon: [{ url: '/icon.png', type: 'image/png' }],
+    shortcut: [{ url: '/icon.png', type: 'image/png' }],
+    apple: [{ url: '/apple-icon.png', type: 'image/png' }],
   },
 }
 
