@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import { ActionLink } from '@/components/common/ActionControl'
+import { Surface } from '@/components/common/Surface'
 import { ResumePdfActions } from '@/components/resume/ResumePdfActions'
 import { ResumePdfViewer } from '@/components/resume/ResumePdfViewer'
 import { getResumePdfUrl, isResumePdfStorageConfigured } from '@/lib/resume-pdf'
@@ -18,18 +19,18 @@ export const revalidate = 0
 function ResumeNotice({ title, description }: { title: string; description: string }) {
   return (
     <section className="mx-auto w-full max-w-5xl px-4 py-8">
-      <div className="rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+      <Surface className="rounded-2xl bg-white p-6 dark:bg-zinc-900">
         <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">{title}</h1>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">{description}</p>
         <div className="mt-4">
-          <Link
+          <ActionLink
             href="/ryong"
-            className="inline-flex items-center rounded-lg border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-zinc-600 dark:text-zinc-200 dark:hover:bg-zinc-800"
+            variant="outline"
           >
             관리자 페이지로 이동
-          </Link>
+          </ActionLink>
         </div>
-      </div>
+      </Surface>
     </section>
   )
 }

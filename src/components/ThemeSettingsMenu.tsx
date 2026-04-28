@@ -1,127 +1,55 @@
 'use client'
 
-import type { CSSProperties } from 'react'
-import { useId, useRef, useState } from 'react'
-import { useAnimatedPresence } from '@/hooks/useAnimatedPresence'
-import { useDismissablePopover } from '@/hooks/useDismissablePopover'
+import { useState } from 'react'
+import { SlidersHorizontal } from 'lucide-react'
+import { SettingsSection } from '@/components/common/SettingsSection'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import { BlogThemeSelect } from './BlogThemeSelect'
 import { CodeThemeSelect } from './CodeThemeSelect'
 import { FontThemeSelect } from './FontThemeSelect'
 import { IconControlButton } from './IconControlButton'
 import { LogoMotionSelect } from './LogoMotionSelect'
 
-const SETTINGS_PORTAL_SELECTOR = '[data-settings-menu-portal]'
-const SETTINGS_PORTAL_SELECTORS = [SETTINGS_PORTAL_SELECTOR]
-
 export function ThemeSettingsMenu() {
   const [open, setOpen] = useState(false)
-  const { isMounted, state } = useAnimatedPresence(open, {
-    enterDelayMs: 16,
-    exitDurationMs: 180,
-  })
-  const wrapperRef = useRef<HTMLDivElement | null>(null)
-  const panelId = useId()
-
-  useDismissablePopover(open, wrapperRef, setOpen, SETTINGS_PORTAL_SELECTORS)
 
   return (
-    <div ref={wrapperRef} className="relative">
-      <IconControlButton
-        srLabel="환경설정 열기"
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-controls={open ? panelId : undefined}
-        onClick={() => setOpen((previous) => !previous)}
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <IconControlButton srLabel="환경설정 열기">
+          <SlidersHorizontal aria-hidden="true" className="block h-[18px] w-[18px]" />
+        </IconControlButton>
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        sideOffset={9}
+        aria-label="환경설정 패널"
+        data-settings-menu-portal=""
+        className="settings-popover w-[min(92vw,22rem)] rounded-2xl border-zinc-200/90 bg-white/95 p-3 shadow-[0_24px_60px_-30px_rgba(20,20,30,0.55)] backdrop-blur-xl dark:border-zinc-700/80 dark:bg-zinc-900/95"
       >
-        <svg
-          aria-hidden="true"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          className="block h-[18px] w-[18px]"
-        >
-          <line x1="4" y1="21" x2="4" y2="14" strokeLinecap="round" />
-          <line x1="4" y1="10" x2="4" y2="3" strokeLinecap="round" />
-          <line x1="12" y1="21" x2="12" y2="12" strokeLinecap="round" />
-          <line x1="12" y1="8" x2="12" y2="3" strokeLinecap="round" />
-          <line x1="20" y1="21" x2="20" y2="16" strokeLinecap="round" />
-          <line x1="20" y1="12" x2="20" y2="3" strokeLinecap="round" />
-          <line x1="2" y1="14" x2="6" y2="14" strokeLinecap="round" />
-          <line x1="10" y1="8" x2="14" y2="8" strokeLinecap="round" />
-          <line x1="18" y1="16" x2="22" y2="16" strokeLinecap="round" />
-        </svg>
-      </IconControlButton>
+        <p className="px-1 text-[11px] font-semibold tracking-[0.1em] text-zinc-500 dark:text-zinc-400">
+          SETTINGS
+        </p>
 
-      {isMounted ? (
-        <div
-          id={panelId}
-          role="dialog"
-          aria-label="환경설정 패널"
-          data-state={state}
-          className="settings-popover absolute right-0 top-[calc(100%+0.55rem)] z-50 w-[min(92vw,22rem)]"
-        >
-          <div className="rounded-2xl border border-zinc-200/90 bg-white/95 p-3 shadow-[0_24px_60px_-30px_rgba(20,20,30,0.55)] backdrop-blur-xl dark:border-zinc-700/80 dark:bg-zinc-900/95">
-            <p className="px-1 text-[11px] font-semibold tracking-[0.1em] text-zinc-500 dark:text-zinc-400">
-              SETTINGS
-            </p>
-
-            <div className="mt-2 grid gap-2.5">
-              <section
-                className="settings-item rounded-xl border border-zinc-200/80 bg-zinc-50/85 p-3 dark:border-zinc-700/70 dark:bg-zinc-800/70"
-                style={{ '--settings-item-delay': '60ms' } as CSSProperties}
-              >
-                <p className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-zinc-200 bg-white text-[10px] font-bold text-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
-                    Aa
-                  </span>
-                  Font
-                </p>
-                <FontThemeSelect className="h-10 w-full text-sm" />
-              </section>
-
-              <section
-                className="settings-item rounded-xl border border-zinc-200/80 bg-zinc-50/85 p-3 dark:border-zinc-700/70 dark:bg-zinc-800/70"
-                style={{ '--settings-item-delay': '120ms' } as CSSProperties}
-              >
-                <p className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-zinc-200 bg-white text-[9px] font-bold text-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
-                    {'</>'}
-                  </span>
-                  Code
-                </p>
-                <CodeThemeSelect className="h-10 w-full text-sm" />
-              </section>
-
-              <section
-                className="settings-item rounded-xl border border-zinc-200/80 bg-zinc-50/85 p-3 dark:border-zinc-700/70 dark:bg-zinc-800/70"
-                style={{ '--settings-item-delay': '180ms' } as CSSProperties}
-              >
-                <p className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-zinc-200 bg-white text-[10px] font-bold text-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
-                    ●
-                  </span>
-                  Theme
-                </p>
-                <BlogThemeSelect className="h-10 w-full text-sm" />
-              </section>
-
-              <section
-                className="settings-item rounded-xl border border-zinc-200/80 bg-zinc-50/85 p-3 dark:border-zinc-700/70 dark:bg-zinc-800/70"
-                style={{ '--settings-item-delay': '240ms' } as CSSProperties}
-              >
-                <p className="mb-2 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-500 dark:text-zinc-400">
-                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-md border border-zinc-200 bg-white text-[10px] font-bold text-zinc-500 dark:border-zinc-600 dark:bg-zinc-900 dark:text-zinc-300">
-                    ~
-                  </span>
-                  Logo
-                </p>
-                <LogoMotionSelect className="h-10 w-full text-sm" />
-              </section>
-            </div>
-          </div>
+        <div className="mt-2 grid gap-2.5">
+          <SettingsSection label="Font" marker="Aa" delayMs={60}>
+            <FontThemeSelect className="h-10 w-full text-sm" />
+          </SettingsSection>
+          <SettingsSection label="Code" marker="</>" delayMs={120}>
+            <CodeThemeSelect className="h-10 w-full text-sm" />
+          </SettingsSection>
+          <SettingsSection label="Theme" marker="●" delayMs={180}>
+            <BlogThemeSelect className="h-10 w-full text-sm" />
+          </SettingsSection>
+          <SettingsSection label="Logo" marker="~" delayMs={240}>
+            <LogoMotionSelect className="h-10 w-full text-sm" />
+          </SettingsSection>
         </div>
-      ) : null}
-    </div>
+      </PopoverContent>
+    </Popover>
   )
 }

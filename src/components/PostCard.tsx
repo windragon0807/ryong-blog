@@ -1,8 +1,10 @@
 import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import type { Post } from '@/types/notion'
+import { CardShell } from '@/components/common/Surface'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
 import { RetryableImage } from '@/components/RetryableImage'
+import { Badge } from '@/components/ui/badge'
 import { getCoverAccent } from '@/lib/coverAccent'
 
 interface Props {
@@ -47,10 +49,9 @@ export function PostCard({
       style={motionStyle}
       data-motion-cycle={motionCycle}
     >
-      <article
-        className={`post-card-motion post-card-surface glass-card-shell glass-surface relative isolate transform-gpu origin-center translate-y-0 scale-100 overflow-hidden border border-zinc-200/72 bg-white/80 backdrop-blur-[11px] dark:border-zinc-700/68 dark:bg-zinc-800/72 ${
-          isCompact ? 'rounded-xl' : 'rounded-2xl'
-        } ${
+      <CardShell
+        compact={isCompact}
+        className={`${
           isList ? '' : 'h-full'
         } ${interactionClass}`}
       >
@@ -169,17 +170,17 @@ export function PostCard({
                 {!isCompact && (post.series || post.tags.length > 0) && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {post.series && (
-                      <span className="inline-flex items-center rounded-md border border-blue-200/95 bg-blue-50/80 px-2 py-0.5 text-xs font-medium text-blue-700 backdrop-blur-sm dark:border-blue-700/80 dark:bg-blue-900/35 dark:text-blue-300">
+                      <Badge variant="series">
                         Series · {post.series}
-                      </span>
+                      </Badge>
                     )}
                     {post.tags.map((tag) => (
-                      <span
+                      <Badge
                         key={tag}
-                        className="inline-flex items-center rounded-md border border-zinc-200/85 bg-zinc-100/75 px-2 py-0.5 text-xs font-medium text-zinc-600 backdrop-blur-sm dark:border-zinc-700/70 dark:bg-zinc-700/65 dark:text-zinc-300"
+                        variant="tag"
                       >
                         {tag}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                 )}
@@ -187,7 +188,7 @@ export function PostCard({
             </div>
           </div>
         </div>
-      </article>
+      </CardShell>
     </Link>
   )
 }

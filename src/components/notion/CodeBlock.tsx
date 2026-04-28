@@ -3,6 +3,7 @@ import { codeToHtml } from 'shiki'
 import type { RichText } from '@/types/notion'
 import { SHIKI_THEME_RECORD } from '@/lib/codeThemes'
 import { getCodeLanguageIconSrc } from '@/lib/codeLanguageIcons'
+import { Badge } from '@/components/ui/badge'
 import { RichTextRenderer } from './RichTextRenderer'
 import { CodeCopyButton } from './CodeCopyButton'
 
@@ -46,9 +47,9 @@ export async function CodeBlock({ blockId, code, language, caption }: Props) {
               {language}
             </span>
             {fileName && (
-              <span className="rounded-md border border-zinc-200 bg-zinc-50 px-2 py-0.5 text-[11px] text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
+              <Badge variant="outline" className="bg-zinc-50 px-2 py-0.5 text-[11px] text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
                 {fileName}
-              </span>
+              </Badge>
             )}
           </div>
           <CodeCopyButton code={code} />

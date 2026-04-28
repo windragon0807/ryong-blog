@@ -1,6 +1,9 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { RefreshCw } from 'lucide-react'
+import { Surface } from '@/components/common/Surface'
+import { Button } from '@/components/ui/button'
 
 type PdfPageImage = {
   page: number
@@ -16,19 +19,6 @@ type PdfPageLink = {
   top: number
   width: number
   height: number
-}
-
-function RefreshIcon({ className = '' }: { className?: string }) {
-  return (
-    <svg aria-hidden viewBox="0 0 24 24" className={className} fill="none" stroke="currentColor">
-      <path
-        d="M20 11a8 8 0 1 0 2.3 5.7M20 11V4m0 7h-7"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
 }
 
 function normalizeError(error: unknown) {
@@ -515,11 +505,11 @@ export function ResumePdfViewer({ pdfUrl }: { pdfUrl: string }) {
     }
   }, [containerWidth, pdfBytes, renderVersion])
 
-  const cardClassName =
-    'overflow-hidden rounded-2xl border border-zinc-200/85 bg-white shadow-[0_16px_45px_-30px_rgba(15,23,42,0.4)] dark:border-zinc-700/80 dark:bg-zinc-950 dark:shadow-[0_18px_44px_-30px_rgba(2,6,23,0.75)]'
-
   return (
-    <div ref={containerRef} className={cardClassName}>
+    <Surface
+      ref={containerRef}
+      className="overflow-hidden rounded-2xl bg-white p-0 shadow-[0_16px_45px_-30px_rgba(15,23,42,0.4)] dark:bg-zinc-950 dark:shadow-[0_18px_44px_-30px_rgba(2,6,23,0.75)]"
+    >
       {loading && <ResumePdfLoadingSkeleton />}
 
       {!loading && error && (
@@ -527,14 +517,16 @@ export function ResumePdfViewer({ pdfUrl }: { pdfUrl: string }) {
           <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-800/60 dark:bg-rose-900/20 dark:text-rose-300">
             <p className="font-medium">PDF를 렌더링할 수 없습니다.</p>
             <p className="mt-1 break-all text-xs opacity-90">{error}</p>
-            <button
+            <Button
               type="button"
+              variant="danger"
+              size="sm"
               onClick={() => setRenderVersion((version) => version + 1)}
-              className="mt-3 inline-flex items-center gap-2 rounded-md border border-rose-300 px-3 py-1.5 text-xs font-medium transition hover:bg-rose-100 dark:border-rose-700 dark:hover:bg-rose-900/40"
+              className="mt-3"
             >
-              <RefreshIcon className="h-3.5 w-3.5" />
+              <RefreshCw className="h-3.5 w-3.5" />
               다시 렌더링
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -570,6 +562,6 @@ export function ResumePdfViewer({ pdfUrl }: { pdfUrl: string }) {
           ))}
         </div>
       )}
-    </div>
+    </Surface>
   )
 }

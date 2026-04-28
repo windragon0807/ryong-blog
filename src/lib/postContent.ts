@@ -1,20 +1,8 @@
 import { cache } from 'react'
-import { unstable_cache } from 'next/cache'
 import type { Block, KnownBlock, Post, RichText } from '@/types/notion'
-import { getAllContentPosts, getPageBlocks, NOTION_CACHE_TAGS } from './notion'
+import { getAllContentPosts, getPageBlocks } from './notion'
 
-const CONTENT_CACHE_TTL_SECONDS = process.env.NODE_ENV === 'development' ? 90 : 3600
 const READING_WORDS_PER_MINUTE = 300
-
-export interface SearchDocument {
-  id: string
-  slug: string
-  title: string
-  description: string
-  tags: string[]
-  series: string | null
-  content: string
-}
 
 export interface ReadingStats {
   words: number
@@ -141,41 +129,6 @@ function estimateReadingStats(text: string): ReadingStats {
 export const getPostReadingStats = cache(async (postId: string): Promise<ReadingStats> => {
   const blocks = await getPageBlocks(postId)
   return estimateReadingStats(extractPlainTextFromBlocks(blocks))
-})
-
-async function getSearchDocumentsImpl(): Promise<SearchDocument[]> {
-  const posts = await getAllContentPosts()
-  const documents = await Promise.all(
-    posts.map(async (post) => {
-      const blocks = await getPageBlocks(post.id)
-      const content = extractPlainTextFromBlocks(blocks)
-
-      return {
-        id: post.id,
-        slug: post.slug,
-        title: post.title,
-        description: post.description,
-        tags: post.tags,
-        series: post.series,
-        content: content.slice(0, 6000),
-      } satisfies SearchDocument
-    })
-  )
-
-  return documents
-}
-
-const getSearchDocumentsCached = unstable_cache(
-  getSearchDocumentsImpl,
-  ['post-search-documents'],
-  {
-    revalidate: CONTENT_CACHE_TTL_SECONDS,
-    tags: [NOTION_CACHE_TAGS.posts, NOTION_CACHE_TAGS.blocks],
-  }
-)
-
-export const getSearchDocuments = cache(async (): Promise<SearchDocument[]> => {
-  return getSearchDocumentsCached()
 })
 
 export async function getRelatedPosts(currentPost: Post, limit = 3): Promise<Post[]> {

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { Check, Copy } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   code: string
@@ -48,48 +50,17 @@ export function CodeCopyButton({ code }: Props) {
       >
         Copied
       </span>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="iconSm"
         onClick={handleCopy}
-        className="inline-flex h-7 w-7 items-center justify-center rounded-md text-zinc-500 transition-all duration-200 hover:bg-zinc-200/80 hover:text-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600/70 dark:hover:text-zinc-100"
+        className="text-zinc-500 hover:bg-zinc-200/80 hover:text-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-600/70 dark:hover:text-zinc-100"
         aria-label={copied ? '코드 복사됨' : '코드 복사'}
         title={copied ? '복사됨' : '코드 복사'}
       >
-        {copied ? (
-          <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
-            <path
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="m5 13 4 4L19 7"
-            />
-          </svg>
-        ) : (
-          <svg viewBox="0 0 24 24" aria-hidden className="h-4 w-4">
-            <rect
-              x="9"
-              y="9"
-              width="11"
-              height="11"
-              rx="2"
-              ry="2"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M5 15V6a2 2 0 0 1 2-2h9"
-            />
-          </svg>
-        )}
-      </button>
+        {copied ? <Check className="h-4 w-4" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
+      </Button>
     </div>
   )
 }

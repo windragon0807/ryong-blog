@@ -8,6 +8,7 @@ import { getRelatedPosts } from '@/lib/postContent'
 import { RelatedPosts } from '@/components/RelatedPosts'
 import { RetryableImage } from '@/components/RetryableImage'
 import { GiscusComments } from '@/components/GiscusComments'
+import { Badge } from '@/components/ui/badge'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
 import { PostReadingTime } from '@/components/notion/PostReadingTime'
 import { PostBodyFallback, PostBodyStream } from '@/components/notion/PostBodyStream'
@@ -162,18 +163,15 @@ export default async function PostPage({ params }: PageProps) {
               {post.series && (
                 <Link
                   href={`/series/${encodeURIComponent(post.series)}`}
-                  className="inline-flex items-center rounded-md border border-blue-200 bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100 dark:border-blue-700 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50"
+                  className="transition-colors hover:brightness-95 dark:hover:brightness-110"
                 >
-                  Series · {post.series}
+                  <Badge variant="series">Series · {post.series}</Badge>
                 </Link>
               )}
               {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center rounded-md bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300"
-                >
+                <Badge key={tag} variant="tag">
                   {tag}
-                </span>
+                </Badge>
               ))}
             </div>
           )}

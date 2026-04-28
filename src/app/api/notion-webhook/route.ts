@@ -87,7 +87,6 @@ function revalidateCommonPaths() {
   revalidatePath('/')
   revalidatePath('/portfolio')
   revalidatePath('/sitemap.xml')
-  revalidatePath('/api/search-index')
   revalidatePath('/posts/[slug]', 'page')
   revalidatePath('/tags/[tag]', 'page')
   revalidatePath('/series/[series]', 'page')

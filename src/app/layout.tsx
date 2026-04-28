@@ -6,7 +6,6 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { ThemeProvider } from 'next-themes'
 import { Header } from '@/components/Header'
 import { HeaderBrandScopeProvider } from '@/components/HeaderBrandScopeProvider'
-import { PostSearchProvider } from '@/components/PostSearchProvider'
 import { SmoothScrollProvider } from '@/components/SmoothScrollProvider'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
 import {
@@ -168,7 +167,7 @@ export default function RootLayout({
       </head>
       <body
         suppressHydrationWarning
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-background text-foreground antialiased`}
       >
         <Script id="code-theme-init" strategy="beforeInteractive">
           {codeThemeBootScript}
@@ -184,12 +183,10 @@ export default function RootLayout({
         </Script>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <HeaderBrandScopeProvider>
-            <PostSearchProvider>
-              <SmoothScrollProvider />
-              <Header />
-              <main className="max-w-3xl mx-auto px-4 pt-8 pb-16">{children}</main>
-              <ScrollToTopButton />
-            </PostSearchProvider>
+            <SmoothScrollProvider />
+            <Header />
+            <main className="max-w-3xl mx-auto px-4 pt-8 pb-16">{children}</main>
+            <ScrollToTopButton />
           </HeaderBrandScopeProvider>
         </ThemeProvider>
         <Analytics />

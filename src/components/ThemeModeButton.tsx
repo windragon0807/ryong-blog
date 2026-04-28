@@ -70,16 +70,26 @@ export function ThemeModeButton() {
             : 'opacity-100 bg-[radial-gradient(circle_at_30%_28%,rgba(250,204,21,0.22),transparent_36%),linear-gradient(180deg,rgba(255,255,255,0.18),rgba(250,204,21,0.06))]'
         }`}
       />
-      <SunIcon
-        className={`relative z-10 h-[18px] w-[18px] transition-all duration-300 ${
-          isDark ? 'scale-75 rotate-45 opacity-0' : 'scale-100 rotate-0 opacity-100'
+      <span
+        aria-hidden="true"
+        className={`absolute inset-0 grid place-items-center transition-[opacity,translate,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,translate,scale] ${
+          isDark
+            ? '-translate-x-7 scale-95 opacity-0'
+            : 'translate-x-0 scale-100 opacity-100'
         }`}
-      />
-      <MoonIcon
-        className={`absolute z-10 h-[18px] w-[18px] transition-all duration-300 ${
-          isDark ? 'scale-100 rotate-0 opacity-100' : 'scale-75 -rotate-45 opacity-0'
+      >
+        <SunIcon className="h-[18px] w-[18px]" />
+      </span>
+      <span
+        aria-hidden="true"
+        className={`absolute inset-0 grid place-items-center transition-[opacity,translate,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,translate,scale] ${
+          isDark
+            ? 'translate-x-0 scale-100 opacity-100'
+            : 'translate-x-7 scale-95 opacity-0'
         }`}
-      />
+      >
+        <MoonIcon className="h-[18px] w-[18px]" />
+      </span>
     </IconControlButton>
   )
 }

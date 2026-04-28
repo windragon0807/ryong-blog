@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppLauncherMenu } from './AppLauncherMenu'
 import { useHeaderBrandScope } from './HeaderBrandScopeProvider'
-import { HeaderSearchOverlay } from './HeaderSearchOverlay'
 import { ICON_CONTROL_BUTTON_CLASS_NAME } from './IconControlButton'
 import { ThemeModeButton } from './ThemeModeButton'
 import { ThemeSettingsMenu } from './ThemeSettingsMenu'
@@ -97,7 +96,6 @@ export function Header() {
             <HomeIcon className="relative z-10 h-[18px] w-[18px]" />
           </Link>
         )}
-        {isExplorerLayout && <HeaderSearchOverlay />}
         <ThemeModeButton />
         <AppLauncherMenu />
         <ThemeSettingsMenu />

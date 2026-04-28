@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import type { Post } from '@/types/notion'
+import { Surface } from '@/components/common/Surface'
+import { Badge } from '@/components/ui/badge'
 
 interface SeriesTimelineProps {
   seriesName: string
@@ -22,7 +24,7 @@ export function SeriesTimeline({ seriesName, posts }: SeriesTimelineProps) {
   )
 
   return (
-    <section className="glass-surface mb-6 overflow-hidden rounded-2xl border border-zinc-200/85 p-5 dark:border-zinc-700/70">
+    <Surface className="mb-6 overflow-hidden rounded-2xl p-5">
       <div className="mb-4 flex items-start justify-between gap-4">
         <div>
           <p className="text-[11px] font-semibold tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
@@ -32,9 +34,9 @@ export function SeriesTimeline({ seriesName, posts }: SeriesTimelineProps) {
             {seriesName} 연재 흐름
           </h2>
         </div>
-        <span className="rounded-full border border-zinc-200/80 bg-white/75 px-3 py-1 text-xs text-zinc-600 dark:border-zinc-700/70 dark:bg-zinc-900/70 dark:text-zinc-300">
+        <Badge variant="count">
           총 {posts.length}편
-        </span>
+        </Badge>
       </div>
 
       <ol className="relative ml-1 border-l border-zinc-200/90 pl-4 dark:border-zinc-700/80">
@@ -62,6 +64,6 @@ export function SeriesTimeline({ seriesName, posts }: SeriesTimelineProps) {
           </li>
         ))}
       </ol>
-    </section>
+    </Surface>
   )
 }
