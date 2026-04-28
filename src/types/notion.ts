@@ -45,6 +45,11 @@ export interface Heading3Block extends BlockBase {
   heading_3: { rich_text: RichText[]; is_toggleable: boolean }
 }
 
+export interface Heading4Block extends BlockBase {
+  type: 'heading_4'
+  heading_4: { rich_text: RichText[]; is_toggleable: boolean }
+}
+
 export interface BulletedListBlock extends BlockBase {
   type: 'bulleted_list_item'
   bulleted_list_item: { rich_text: RichText[] }
@@ -120,6 +125,7 @@ export type KnownBlock =
   | Heading1Block
   | Heading2Block
   | Heading3Block
+  | Heading4Block
   | BulletedListBlock
   | NumberedListBlock
   | CodeBlock

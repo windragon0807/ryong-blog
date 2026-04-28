@@ -61,6 +61,15 @@ const knownBlockRenderers = {
     </h3>
   ),
 
+  heading_4: (block) => (
+    <h4
+      id={getHeadingId(block.id)}
+      className="mt-5 mb-2 scroll-mt-24 text-lg font-semibold text-zinc-800 dark:text-zinc-200"
+    >
+      <RichTextRenderer richText={block.heading_4.rich_text} />
+    </h4>
+  ),
+
   bulleted_list_item: (block, context) => (
     <li className="leading-relaxed text-zinc-700 dark:text-zinc-200">
       <RichTextRenderer richText={block.bulleted_list_item.rich_text} />

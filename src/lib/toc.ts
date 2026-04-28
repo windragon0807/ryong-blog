@@ -3,7 +3,7 @@ import type { Block, RichText } from '@/types/notion'
 export interface TocHeading {
   id: string
   text: string
-  level: 1 | 2 | 3
+  level: 1 | 2 | 3 | 4
 }
 
 export function getHeadingId(blockId: string): string {
@@ -35,6 +35,13 @@ export function extractTocHeadings(blocks: Block[]): TocHeading[] {
           id: getHeadingId(block.id),
           text: getRichTextPlain(headingBlock.heading_3.rich_text),
           level: 3,
+        })
+      } else if (block.type === 'heading_4') {
+        const headingBlock = block as { heading_4: { rich_text: RichText[] } }
+        headings.push({
+          id: getHeadingId(block.id),
+          text: getRichTextPlain(headingBlock.heading_4.rich_text),
+          level: 4,
         })
       }
 

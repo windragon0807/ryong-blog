@@ -6,18 +6,16 @@ import { FloatingToc } from './FloatingToc'
 
 interface Props {
   postId: string
-  postTitle: string
 }
 
-export async function PostBodyStream({ postId, postTitle }: Props) {
+export async function PostBodyStream({ postId }: Props) {
   const blocks = await getPageBlocks(postId)
   const tocHeadings = extractTocHeadings(blocks)
-  const fullTocHeadings = [{ id: 'post-title', text: postTitle, level: 1 as const }, ...tocHeadings]
 
   return (
     <>
       <BlockRenderer postId={postId} blocks={blocks} />
-      <FloatingToc headings={fullTocHeadings} />
+      <FloatingToc headings={tocHeadings} />
     </>
   )
 }

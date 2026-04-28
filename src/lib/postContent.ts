@@ -43,6 +43,13 @@ function extractPlainTextFromBlocks(blocks: Block[]): string {
             )
           )
           break
+        case 'heading_4':
+          fragments.push(
+            richTextToString(
+              (block as Extract<KnownBlock, { type: 'heading_4' }>).heading_4.rich_text
+            )
+          )
+          break
         case 'bulleted_list_item':
           fragments.push(
             richTextToString(

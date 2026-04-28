@@ -67,6 +67,13 @@ export function FloatingToc({ headings }: Props) {
     () => headings.filter((heading) => heading.text.trim().length > 0),
     [headings]
   )
+  const minimumHeadingLevel = useMemo(
+    () =>
+      visibleHeadings.length > 0
+        ? Math.min(...visibleHeadings.map((heading) => heading.level))
+        : 1,
+    [visibleHeadings]
+  )
   const currentActiveId = useMemo(() => {
     if (visibleHeadings.some((heading) => heading.id === activeId)) {
       return activeId
@@ -175,35 +182,38 @@ export function FloatingToc({ headings }: Props) {
             }}
           />
           <ul className="space-y-0.5">
-          {visibleHeadings.map((heading) => {
-            const isActive = currentActiveId === heading.id
-            const indent =
-              heading.level === 1
-                ? ''
-                : heading.level === 2
-                  ? 'pl-4'
-                  : 'pl-8'
+            {visibleHeadings.map((heading) => {
+              const isActive = currentActiveId === heading.id
+              const displayLevel = Math.max(1, heading.level - minimumHeadingLevel + 1)
+              const indent =
+                displayLevel === 1
+                  ? ''
+                  : displayLevel === 2
+                    ? 'pl-4'
+                    : displayLevel === 3
+                      ? 'pl-8'
+                      : 'pl-12'
 
-            return (
-              <li key={heading.id}>
-                <a
-                  ref={(node) => {
-                    itemRefs.current[heading.id] = node
-                  }}
-                  href={`#${heading.id}`}
-                  onClick={handleMove(heading.id)}
-                  style={isActive ? { color: 'var(--theme-accent-current)' } : undefined}
-                  className={`block py-0.5 pr-2 text-[14px] leading-[1.45] font-medium transition-colors ${indent} ${
-                    isActive
-                      ? 'text-zinc-900 dark:text-zinc-100'
-                      : 'text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300'
-                  }`}
-                >
-                  {heading.text}
-                </a>
-              </li>
-            )
-          })}
+              return (
+                <li key={heading.id}>
+                  <a
+                    ref={(node) => {
+                      itemRefs.current[heading.id] = node
+                    }}
+                    href={`#${heading.id}`}
+                    onClick={handleMove(heading.id)}
+                    style={isActive ? { color: 'var(--theme-accent-current)' } : undefined}
+                    className={`block py-0.5 pr-2 text-[14px] leading-[1.45] font-medium transition-colors ${indent} ${
+                      isActive
+                        ? 'text-zinc-900 dark:text-zinc-100'
+                        : 'text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300'
+                    }`}
+                  >
+                    {heading.text}
+                  </a>
+                </li>
+              )
+            })}
           </ul>
         </div>
       </nav>

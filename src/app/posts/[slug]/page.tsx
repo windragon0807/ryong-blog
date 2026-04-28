@@ -179,7 +179,7 @@ export default async function PostPage({ params }: PageProps) {
 
         {/* 본문 */}
         <Suspense fallback={<PostBodyFallback />}>
-          <PostBodyStream postId={post.id} postTitle={post.title} />
+          <PostBodyStream postId={post.id} />
         </Suspense>
 
         <GiscusComments />
