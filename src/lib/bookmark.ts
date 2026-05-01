@@ -1,7 +1,7 @@
 import { unstable_cache } from 'next/cache'
 import { cache } from 'react'
 
-export interface BookmarkMetadata {
+interface BookmarkMetadata {
   title: string | null
   description: string | null
   image: string | null
@@ -10,7 +10,7 @@ export interface BookmarkMetadata {
   url: string
 }
 
-export interface ParsedBookmarkUrl {
+interface ParsedBookmarkUrl {
   href: string
   host: string
   label: string

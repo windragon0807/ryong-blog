@@ -7,7 +7,6 @@ import { getPostBySlug, getAllSlugs } from '@/lib/notion'
 import { getRelatedPosts } from '@/lib/postContent'
 import { RelatedPosts } from '@/components/RelatedPosts'
 import { RetryableImage } from '@/components/RetryableImage'
-import { GiscusComments } from '@/components/GiscusComments'
 import { Badge } from '@/components/ui/badge'
 import { PostPageIcon } from '@/components/notion/PostPageIcon'
 import { PostReadingTime } from '@/components/notion/PostReadingTime'
@@ -182,7 +181,6 @@ export default async function PostPage({ params }: PageProps) {
           <PostBodyStream postId={post.id} />
         </Suspense>
 
-        <GiscusComments />
         <RelatedPosts posts={relatedPosts} />
       </article>
     </>
