@@ -25,14 +25,6 @@ export function SectionToggleButton() {
     >
       <span
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-0 transition-opacity duration-300 ${
-          isNews
-            ? 'opacity-100 bg-[radial-gradient(circle_at_30%_28%,rgba(96,165,250,0.18),transparent_38%),linear-gradient(180deg,rgba(59,130,246,0.10),rgba(15,23,42,0.06))]'
-            : 'opacity-100 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.18),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.05),rgba(15,23,42,0.02))] dark:bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.12),transparent_38%),linear-gradient(180deg,rgba(148,163,184,0.1),rgba(15,23,42,0.04))]'
-        }`}
-      />
-      <span
-        aria-hidden="true"
         className={`absolute inset-0 grid place-items-center transition-[opacity,translate,scale] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] will-change-[opacity,translate,scale] ${
           isHistory
             ? 'translate-x-0 scale-100 opacity-100'
