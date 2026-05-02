@@ -20,14 +20,6 @@
 }
 
 @font-face {
-  font-family: 'JENNY';
-  src: url('/fonts/jenny/JENNY-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
   font-family: 'Hancom MalangMalang';
   src: url('/fonts/hancom-malangmalang/HancomMalangMalang-Regular.otf')
     format('opentype');
@@ -106,10 +98,6 @@ html[data-font-theme='pretendard'] {
 
 html[data-font-theme='maplestory'] {
   --font-user: 'Maplestory OTF', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
-}
-
-html[data-font-theme='jenny'] {
-  --font-user: 'JENNY', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif;
 }
 
 html[data-font-theme='hancom-malangmalang'] {

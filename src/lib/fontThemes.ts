@@ -1,7 +1,6 @@
 export const FONT_THEME_VALUES = [
   'pretendard',
   'maplestory',
-  'jenny',
   'hancom-malangmalang',
 ] as const
 
@@ -13,7 +12,6 @@ export const FONT_THEME_OPTIONS: ReadonlyArray<{
 }> = [
   { value: 'pretendard', label: 'Pretendard (기본)' },
   { value: 'maplestory', label: 'Maplestory' },
-  { value: 'jenny', label: 'JENNY' },
   { value: 'hancom-malangmalang', label: '한컴 말랑말랑체' },
 ]
 
@@ -32,8 +30,6 @@ const FONT_THEME_STACKS: Record<FontThemeName, string> = {
     "Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif",
   maplestory:
     "'Maplestory OTF', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif",
-  jenny:
-    "'JENNY', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif",
   'hancom-malangmalang':
     "'Hancom MalangMalang', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', sans-serif",
 }
