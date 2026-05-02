@@ -16,8 +16,17 @@ const notion = new Client({
 const BLOG_DATABASE_ID = process.env.NOTION_DATABASE_ID!
 const PORTFOLIO_DATABASE_ID =
   process.env.NOTION_PORTFOLIO_DATABASE_ID?.trim() || '31d3d4af55eb80989dddeb5baa502d11'
-const CONTENT_DATABASE_IDS = Array.from(
+const NEWS_DATABASE_ID =
+  process.env.NOTION_NEWS_DATABASE_ID?.trim() || '3533d4af55eb8072a237e18b8ef1b042'
+
+// `/posts/[slug]` 가 검색하는 DB 집합 (블로그·포트폴리오만). News 는 슬러그 충돌 방지를 위해 제외.
+const POST_DETAIL_DATABASE_IDS = Array.from(
   new Set([BLOG_DATABASE_ID, PORTFOLIO_DATABASE_ID].filter(Boolean))
+)
+
+// 전체 콘텐츠 DB (webhook 검증 / getPostByPageId 등 generic lookup용)
+const CONTENT_DATABASE_IDS = Array.from(
+  new Set([...POST_DETAIL_DATABASE_IDS, NEWS_DATABASE_ID].filter(Boolean))
 )
 const CACHE_TTL_SECONDS = process.env.NODE_ENV === 'development' ? 120 : 3600
 
@@ -146,7 +155,9 @@ function getPageIcon(page: Pick<PageObjectResponse, 'icon'>): Post['icon'] {
 }
 
 function getPostSource(databaseId: string): PostSource {
-  return databaseId === PORTFOLIO_DATABASE_ID ? 'portfolio' : 'blog'
+  if (databaseId === NEWS_DATABASE_ID) return 'news'
+  if (databaseId === PORTFOLIO_DATABASE_ID) return 'portfolio'
+  return 'blog'
 }
 
 function pageToPost(
@@ -286,6 +297,10 @@ export const getPortfolioPosts = cache(async (): Promise<Post[]> => {
   return getPostsCached(PORTFOLIO_DATABASE_ID)
 })
 
+export const getNewsPosts = cache(async (): Promise<Post[]> => {
+  return getPostsCached(NEWS_DATABASE_ID)
+})
+
 export const getAllContentPosts = cache(async (): Promise<Post[]> => {
   const postGroups = await Promise.all(
     CONTENT_DATABASE_IDS.map((databaseId) => getPostsCached(databaseId))
@@ -306,12 +321,16 @@ async function getPostBySlugFromDatabase(
 }
 
 export const getPostBySlug = cache(async (slug: string): Promise<Post | null> => {
-  for (const databaseId of CONTENT_DATABASE_IDS) {
+  for (const databaseId of POST_DETAIL_DATABASE_IDS) {
     const post = await getPostBySlugFromDatabase(databaseId, slug)
     if (post) return post
   }
 
   return null
+})
+
+export const getNewsPostBySlug = cache(async (slug: string): Promise<Post | null> => {
+  return getPostBySlugFromDatabase(NEWS_DATABASE_ID, slug)
 })
 
 /** 특정 태그의 포스트 목록 */
@@ -413,16 +432,20 @@ export const getPageBlocks = cache(async (blockId: string): Promise<Block[]> => 
   return getPageBlocksCached(blockId)
 })
 
-/** generateStaticParams용 — 모든 published 슬러그 반환 */
+/** /posts/[slug] 용 — 블로그·포트폴리오 슬러그만 반환 (News 제외) */
 export async function getAllSlugs(): Promise<string[]> {
-  const posts = await getAllContentPosts()
-  return posts
-    .map((p) => p.slug)
-    .filter(Boolean)
-    .filter(
-      (slugValue, index, arr) =>
-        arr.findIndex((otherSlug) => otherSlug === slugValue) === index
-    )
+  const groups = await Promise.all(
+    POST_DETAIL_DATABASE_IDS.map((databaseId) => getPostsCached(databaseId))
+  )
+  const slugs = groups.flat().map((post) => post.slug).filter(Boolean)
+  return Array.from(new Set(slugs))
+}
+
+/** /news/[slug] 용 — News DB 슬러그만 반환 */
+export async function getAllNewsSlugs(): Promise<string[]> {
+  const posts = await getPostsCached(NEWS_DATABASE_ID)
+  const slugs = posts.map((post) => post.slug).filter(Boolean)
+  return Array.from(new Set(slugs))
 }
 
 /** 특정 시리즈의 포스트 목록 */

@@ -12,7 +12,6 @@ interface Props {
   variant?: 'grid' | 'list'
   density?: 'default' | 'compact'
   motionIndex?: number
-  motionCycle?: number
 }
 
 export function PostCard({
@@ -20,7 +19,6 @@ export function PostCard({
   variant = 'grid',
   density = 'default',
   motionIndex = 0,
-  motionCycle = 0,
 }: Props) {
   const isList = variant === 'list'
   const isCompact = density === 'compact'
@@ -47,7 +45,6 @@ export function PostCard({
       href={`/posts/${post.slug}`}
       className={`group block ${isList ? '' : 'h-full'}`}
       style={motionStyle}
-      data-motion-cycle={motionCycle}
     >
       <CardShell
         compact={isCompact}

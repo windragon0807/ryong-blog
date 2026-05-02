@@ -1,4 +1,4 @@
-export type PostSource = 'blog' | 'portfolio'
+export type PostSource = 'blog' | 'portfolio' | 'news'
 
 export interface Post {
   id: string
@@ -119,6 +119,23 @@ export interface BookmarkBlock extends BlockBase {
   }
 }
 
+export interface TableBlock extends BlockBase {
+  type: 'table'
+  table: {
+    table_width: number
+    has_column_header: boolean
+    has_row_header: boolean
+  }
+  children?: Block[]
+}
+
+export interface TableRowBlock extends BlockBase {
+  type: 'table_row'
+  table_row: {
+    cells: RichText[][]
+  }
+}
+
 // 알려진 블록 타입만 유니온으로 구성 (switch default로 미지원 타입 처리)
 export type KnownBlock =
   | ParagraphBlock
@@ -137,6 +154,8 @@ export type KnownBlock =
   | ColumnListBlock
   | ColumnBlock
   | BookmarkBlock
+  | TableBlock
+  | TableRowBlock
 
 // Notion API에서 오는 모든 블록 (알 수 없는 타입 포함)
 export type Block = KnownBlock | (BlockBase & { type: string })

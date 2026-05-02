@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppLauncherMenu } from './AppLauncherMenu'
+import { SectionToggleButton } from './SectionToggleButton'
 import { useHeaderBrandScope } from './HeaderBrandScopeProvider'
 import { ICON_CONTROL_BUTTON_CLASS_NAME } from './IconControlButton'
 import { ThemeModeButton } from './ThemeModeButton'
@@ -41,14 +42,8 @@ function HomeIcon({ className = '' }: { className?: string }) {
 export function Header() {
   const pathname = usePathname()
   const { scope } = useHeaderBrandScope()
-  const isExplorerLayout =
-    pathname === '/' ||
-    pathname === '/portfolio' ||
-    pathname.startsWith('/tags/') ||
-    pathname.startsWith('/series/')
-  const isResumeLayout = pathname === '/resume'
-  const isPortfolioLayout = pathname === '/portfolio'
-  const shouldShowHomeButton = isResumeLayout || isPortfolioLayout
+  const shouldShowHomeButton =
+    pathname === '/resume' || pathname === '/portfolio'
   const brandLabel =
     scope === 'resume'
       ? 'ryong.resume'
@@ -57,63 +52,53 @@ export function Header() {
         : 'ryong.log'
   const brandCharacters = Array.from(brandLabel)
   const brandHref = scope === 'portfolio' ? '/portfolio' : '/'
-  const maxWidthClassName = isExplorerLayout ? 'max-w-[1200px]' : 'max-w-3xl'
-
-  const headerInner = (
-    <div className="flex min-h-14 items-center justify-between gap-3 py-2 sm:gap-4 sm:py-0">
-      <div className="min-w-0 ml-2 sm:ml-0">
-        <Link
-          href={brandHref}
-          className="brand-link relative inline-grid max-w-full truncate font-bold text-lg text-zinc-900 dark:text-zinc-100"
-        >
-          <span className="brand-base block">{brandLabel}</span>
-          <span aria-hidden className="brand-animated-layer">
-            {brandCharacters.map((character, index) => (
-              <span
-                key={`${brandLabel}-${character}-${index}`}
-                className="brand-animated-char"
-                style={{ '--brand-char-index': index } as CSSProperties}
-              >
-                {character}
-              </span>
-            ))}
-          </span>
-        </Link>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-        {shouldShowHomeButton && (
-          <Link
-            href="/"
-            aria-label="홈으로 이동"
-            className={`${ICON_CONTROL_BUTTON_CLASS_NAME} relative overflow-hidden`.trim()}
-          >
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.18),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.05),rgba(15,23,42,0.02))] dark:bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.12),transparent_38%),linear-gradient(180deg,rgba(148,163,184,0.1),rgba(15,23,42,0.04))]"
-            />
-            <span className="sr-only">홈으로 이동</span>
-            <HomeIcon className="relative z-10 h-[18px] w-[18px]" />
-          </Link>
-        )}
-        <ThemeModeButton />
-        <AppLauncherMenu />
-        <ThemeSettingsMenu />
-      </div>
-    </div>
-  )
 
   return (
     <header className="glass-surface header-sticky top-0 z-50 w-full">
-      {isResumeLayout ? (
-        <div className="mx-auto w-full max-w-[1280px] px-3 sm:px-6">
-          <div className="mx-auto w-full max-w-[1120px]">{headerInner}</div>
+      <div className="w-full px-4 md:px-[60px]">
+        <div className="flex min-h-14 items-center justify-between gap-3 py-2 sm:gap-4 sm:py-0">
+          <div className="min-w-0">
+            <Link
+              href={brandHref}
+              className="brand-link relative inline-grid max-w-full truncate font-bold text-lg text-zinc-900 dark:text-zinc-100"
+            >
+              <span className="brand-base block">{brandLabel}</span>
+              <span aria-hidden className="brand-animated-layer">
+                {brandCharacters.map((character, index) => (
+                  <span
+                    key={`${brandLabel}-${character}-${index}`}
+                    className="brand-animated-char"
+                    style={{ '--brand-char-index': index } as CSSProperties}
+                  >
+                    {character}
+                  </span>
+                ))}
+              </span>
+            </Link>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            {shouldShowHomeButton && (
+              <Link
+                href="/"
+                aria-label="홈으로 이동"
+                className={`${ICON_CONTROL_BUTTON_CLASS_NAME} relative overflow-hidden`.trim()}
+              >
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.18),transparent_38%),linear-gradient(180deg,rgba(15,23,42,0.05),rgba(15,23,42,0.02))] dark:bg-[radial-gradient(circle_at_30%_28%,rgba(255,255,255,0.12),transparent_38%),linear-gradient(180deg,rgba(148,163,184,0.1),rgba(15,23,42,0.04))]"
+                />
+                <span className="sr-only">홈으로 이동</span>
+                <HomeIcon className="relative z-10 h-[18px] w-[18px]" />
+              </Link>
+            )}
+            <SectionToggleButton />
+            <ThemeModeButton />
+            <AppLauncherMenu />
+            <ThemeSettingsMenu />
+          </div>
         </div>
-      ) : (
-        <div className={`${maxWidthClassName} mx-auto px-3 sm:px-4`}>
-          {headerInner}
-        </div>
-      )}
+      </div>
     </header>
   )
 }

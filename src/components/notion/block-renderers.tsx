@@ -200,6 +200,75 @@ const knownBlockRenderers = {
     <div className="min-w-0">{context.renderBlocks(block.children ?? [])}</div>
   ),
 
+  table: (block) => {
+    const rows = (block.children ?? []).filter(
+      (child): child is Extract<KnownBlock, { type: 'table_row' }> =>
+        child.type === 'table_row'
+    )
+    if (rows.length === 0) return null
+
+    const hasColumnHeader = block.table.has_column_header
+    const hasRowHeader = block.table.has_row_header
+    const headerRow = hasColumnHeader ? rows[0] : null
+    const bodyRows = hasColumnHeader ? rows.slice(1) : rows
+
+    // 행마다 cell 개수가 table_width와 다른 경우 (Notion API 엣지케이스) 빈 셀로 패딩
+    const colCount = block.table.table_width
+    const padCells = (cells: RichText[][]): RichText[][] => {
+      if (cells.length === colCount) return cells
+      if (cells.length > colCount) return cells.slice(0, colCount)
+      return [...cells, ...Array.from({ length: colCount - cells.length }, () => [] as RichText[])]
+    }
+
+    const headerCellClass =
+      'border-b-2 border-zinc-300 bg-zinc-50/80 px-3 py-2 text-left align-top text-sm font-semibold text-zinc-800 dark:border-zinc-600 dark:bg-zinc-800/40 dark:text-zinc-100'
+    const cellClass =
+      'border-b border-zinc-200 px-3 py-2 align-top text-sm text-zinc-700 dark:border-zinc-700/70 dark:text-zinc-200'
+    const rowHeaderClass =
+      'border-b border-zinc-200 px-3 py-2 align-top text-sm font-semibold text-zinc-800 dark:border-zinc-700/70 dark:text-zinc-100'
+
+    return (
+      <div className="my-5 overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700/70">
+        <table className="min-w-full border-collapse">
+          {headerRow && (
+            <thead>
+              <tr>
+                {padCells(headerRow.table_row.cells).map((cell, idx) => (
+                  <th key={idx} scope="col" className={headerCellClass}>
+                    <RichTextRenderer richText={cell} />
+                  </th>
+                ))}
+              </tr>
+            </thead>
+          )}
+          <tbody>
+            {bodyRows.map((row) => (
+              <tr key={row.id} className="transition-colors hover:bg-zinc-50/60 dark:hover:bg-zinc-800/30">
+                {padCells(row.table_row.cells).map((cell, idx) => {
+                  const isRowHeader = hasRowHeader && idx === 0
+                  if (isRowHeader) {
+                    return (
+                      <th key={idx} scope="row" className={rowHeaderClass}>
+                        <RichTextRenderer richText={cell} />
+                      </th>
+                    )
+                  }
+                  return (
+                    <td key={idx} className={cellClass}>
+                      <RichTextRenderer richText={cell} />
+                    </td>
+                  )
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )
+  },
+
+  table_row: () => null,
+
   bookmark: async (block) => {
     const caption = richTextToPlain(block.bookmark.caption)
     const info = parseBookmarkUrl(block.bookmark.url)
