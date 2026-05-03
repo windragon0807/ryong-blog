@@ -36,16 +36,16 @@ export function ThemeSettingsMenu() {
         </p>
 
         <div className="mt-2 grid gap-2.5">
-          <SettingsSection label="Font" marker="Aa" delayMs={60}>
+          <SettingsSection label="Font" delayMs={60}>
             <FontThemeSelect className="h-10 w-full text-sm" />
           </SettingsSection>
-          <SettingsSection label="Code" marker="</>" delayMs={120}>
+          <SettingsSection label="Code" delayMs={120}>
             <CodeThemeSelect className="h-10 w-full text-sm" />
           </SettingsSection>
-          <SettingsSection label="Theme" marker="●" delayMs={180}>
+          <SettingsSection label="Theme" delayMs={180}>
             <BlogThemeSelect className="h-10 w-full text-sm" />
           </SettingsSection>
-          <SettingsSection label="Logo" marker="~" delayMs={240}>
+          <SettingsSection label="Logo Animation" delayMs={240}>
             <LogoMotionSelect className="h-10 w-full text-sm" />
           </SettingsSection>
         </div>

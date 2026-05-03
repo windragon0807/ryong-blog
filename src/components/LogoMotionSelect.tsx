@@ -50,12 +50,7 @@ export function LogoMotionSelect({ className = '' }: LogoMotionSelectProps) {
         <SelectContent position="popper" data-settings-menu-portal="">
           {LOGO_MOTION_OPTIONS.map((motion) => (
             <SelectItem key={motion.value} value={motion.value}>
-              <span className="flex flex-col">
-                <span>{motion.label}</span>
-                <span className="text-[11px] text-zinc-400 dark:text-zinc-500">
-                  {motion.description}
-                </span>
-              </span>
+              {motion.label}
             </SelectItem>
           ))}
         </SelectContent>
