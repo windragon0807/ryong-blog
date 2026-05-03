@@ -188,7 +188,11 @@ html:not(.dark) {
 }
 
 html {
-  scrollbar-gutter: stable;
+  /* `overflow-y: scroll` 로 html 을 명시적 scroll container 로 만들어 두 가지를 동시에 해결:
+     1) body 의 overflow 가 viewport 로 propagate 되지 않게 막아 dropdown 이 열려도 스크롤바 시각이
+        유지됨 (gutter 자리에 빈 영역이 안 생김)
+     2) 페이지 길이와 무관하게 스크롤바 영역을 항상 reserve → 라우트 변경 시 가로 layout shift 차단 */
+  overflow-y: scroll;
 }
 
 body {
@@ -196,6 +200,17 @@ body {
   color: var(--foreground);
   font-family: var(--font-user) !important;
   overflow-x: clip;
+}
+
+/* Radix Select(react-remove-scroll-bar) 의 scroll-lock 보정 차단.
+   라이브러리는 mount 시 <head> 끝에 `body[data-scroll-locked] { margin-right/padding-right ... !important }`
+   를 동적 주입한다. 빌드된 내 CSS 는 더 일찍 들어가서 같은 specificity 일 때 source-order 로 밀린다.
+   `html body[data-scroll-locked][data-scroll-locked]` 로 specificity 를 한 단계 올려 무조건 덮어쓰기. */
+html body[data-scroll-locked][data-scroll-locked] {
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+  /* position: relative 가 sticky 헤더의 containing block 을 바꿔 미세 reposition 일으키는 케이스 차단 */
+  position: static !important;
 }
 
 @media (hover: hover) and (pointer: fine) {
