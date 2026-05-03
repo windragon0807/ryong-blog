@@ -10,7 +10,7 @@ export const FONT_THEME_OPTIONS: ReadonlyArray<{
   value: FontThemeName
   label: string
 }> = [
-  { value: 'pretendard', label: 'Pretendard (기본)' },
+  { value: 'pretendard', label: 'Pretendard' },
   { value: 'maplestory', label: 'Maplestory' },
   { value: 'hancom-malangmalang', label: '한컴 말랑말랑체' },
 ]
