@@ -184,6 +184,7 @@ html:not(.dark) {
   --radius-2xl: calc(var(--radius) + 10px);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --animate-cursor-blink: typing-cursor-blink 1s infinite;
 }
 
 html {
@@ -709,13 +710,26 @@ html.dark:not([data-code-theme]) .notion-code pre.shiki span {
 .brand-animated-char {
   display: inline-block;
   transform-origin: center bottom;
-  will-change: transform, opacity, filter;
 }
 
-html[data-logo-motion='typing'] .brand-animated-char {
-  opacity: 0;
-  animation: brand-logo-typing 4.2s ease infinite;
-  animation-delay: calc(var(--brand-char-index, 0) * 110ms);
+/* TypingText 의 커서 — 실제 터미널처럼 sharp on/off 깜빡임.
+   Tailwind v4 가 @theme 의 --animate-cursor-blink 토큰을 보고 animate-cursor-blink 유틸리티를 생성. */
+@keyframes typing-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* will-change 는 무한 키프레임을 도는 모션에만 부여 (typing 은 RAF + 1회성이라 GPU 레이어 유지 불필요) */
+html[data-logo-motion='jump'] .brand-animated-char,
+html[data-logo-motion='wave'] .brand-animated-char,
+html[data-logo-motion='slide'] .brand-animated-char {
+  will-change: transform, opacity, filter;
 }
 
 html[data-logo-motion='jump'] .brand-animated-char {
@@ -732,27 +746,6 @@ html[data-logo-motion='slide'] .brand-animated-char {
   opacity: 0;
   animation: brand-logo-slide 3.4s cubic-bezier(0.22, 1, 0.36, 1) infinite;
   animation-delay: calc(var(--brand-char-index, 0) * 80ms);
-}
-
-@keyframes brand-logo-typing {
-  0%,
-  12% {
-    opacity: 0;
-    transform: translateY(0.22em);
-    filter: blur(6px);
-  }
-  20%,
-  68% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
-  84%,
-  100% {
-    opacity: 0;
-    transform: translateY(0);
-    filter: blur(0);
-  }
 }
 
 @keyframes brand-logo-jump {

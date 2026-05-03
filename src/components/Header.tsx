@@ -1,9 +1,9 @@
 'use client'
 
-import type { CSSProperties } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { AppLauncherMenu } from './AppLauncherMenu'
+import { BrandLogo } from './BrandLogo'
 import { SectionToggleButton } from './SectionToggleButton'
 import { useHeaderBrandScope } from './HeaderBrandScopeProvider'
 import { ICON_CONTROL_BUTTON_CLASS_NAME } from './IconControlButton'
@@ -50,7 +50,6 @@ export function Header() {
       : scope === 'portfolio'
         ? 'ryong.portfolio'
         : 'ryong.log'
-  const brandCharacters = Array.from(brandLabel)
   const brandHref = scope === 'portfolio' ? '/portfolio' : '/'
 
   return (
@@ -62,18 +61,7 @@ export function Header() {
               href={brandHref}
               className="brand-link relative inline-grid max-w-full truncate font-bold text-lg text-zinc-900 dark:text-zinc-100"
             >
-              <span className="brand-base block">{brandLabel}</span>
-              <span aria-hidden className="brand-animated-layer">
-                {brandCharacters.map((character, index) => (
-                  <span
-                    key={`${brandLabel}-${character}-${index}`}
-                    className="brand-animated-char"
-                    style={{ '--brand-char-index': index } as CSSProperties}
-                  >
-                    {character}
-                  </span>
-                ))}
-              </span>
+              <BrandLogo label={brandLabel} />
             </Link>
           </div>
 
